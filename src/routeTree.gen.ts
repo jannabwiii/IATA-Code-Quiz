@@ -10,33 +10,115 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FlashcardsRouteImport } from './routes/flashcards'
+import { Route as ListenRouteImport } from './routes/listen'
+import { Route as MultipleChoiceRouteImport } from './routes/multiple-choice'
+import { Route as PronounceRouteImport } from './routes/pronounce'
+import { Route as TablesRouteImport } from './routes/tables'
+import { Route as TypeItRouteImport } from './routes/type-it'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FlashcardsRoute = FlashcardsRouteImport.update({
+  id: '/flashcards',
+  path: '/flashcards',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ListenRoute = ListenRouteImport.update({
+  id: '/listen',
+  path: '/listen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MultipleChoiceRoute = MultipleChoiceRouteImport.update({
+  id: '/multiple-choice',
+  path: '/multiple-choice',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PronounceRoute = PronounceRouteImport.update({
+  id: '/pronounce',
+  path: '/pronounce',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TablesRoute = TablesRouteImport.update({
+  id: '/tables',
+  path: '/tables',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TypeItRoute = TypeItRouteImport.update({
+  id: '/type-it',
+  path: '/type-it',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/flashcards': typeof FlashcardsRoute
+  '/listen': typeof ListenRoute
+  '/multiple-choice': typeof MultipleChoiceRoute
+  '/pronounce': typeof PronounceRoute
+  '/tables': typeof TablesRoute
+  '/type-it': typeof TypeItRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/flashcards': typeof FlashcardsRoute
+  '/listen': typeof ListenRoute
+  '/multiple-choice': typeof MultipleChoiceRoute
+  '/pronounce': typeof PronounceRoute
+  '/tables': typeof TablesRoute
+  '/type-it': typeof TypeItRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/flashcards': typeof FlashcardsRoute
+  '/listen': typeof ListenRoute
+  '/multiple-choice': typeof MultipleChoiceRoute
+  '/pronounce': typeof PronounceRoute
+  '/tables': typeof TablesRoute
+  '/type-it': typeof TypeItRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/flashcards'
+    | '/listen'
+    | '/multiple-choice'
+    | '/pronounce'
+    | '/tables'
+    | '/type-it'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/flashcards'
+    | '/listen'
+    | '/multiple-choice'
+    | '/pronounce'
+    | '/tables'
+    | '/type-it'
+  id:
+    | '__root__'
+    | '/'
+    | '/flashcards'
+    | '/listen'
+    | '/multiple-choice'
+    | '/pronounce'
+    | '/tables'
+    | '/type-it'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FlashcardsRoute: typeof FlashcardsRoute
+  ListenRoute: typeof ListenRoute
+  MultipleChoiceRoute: typeof MultipleChoiceRoute
+  PronounceRoute: typeof PronounceRoute
+  TablesRoute: typeof TablesRoute
+  TypeItRoute: typeof TypeItRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +130,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/flashcards': {
+      id: '/flashcards'
+      path: '/flashcards'
+      fullPath: '/flashcards'
+      preLoaderRoute: typeof FlashcardsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/listen': {
+      id: '/listen'
+      path: '/listen'
+      fullPath: '/listen'
+      preLoaderRoute: typeof ListenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/multiple-choice': {
+      id: '/multiple-choice'
+      path: '/multiple-choice'
+      fullPath: '/multiple-choice'
+      preLoaderRoute: typeof MultipleChoiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pronounce': {
+      id: '/pronounce'
+      path: '/pronounce'
+      fullPath: '/pronounce'
+      preLoaderRoute: typeof PronounceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tables': {
+      id: '/tables'
+      path: '/tables'
+      fullPath: '/tables'
+      preLoaderRoute: typeof TablesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/type-it': {
+      id: '/type-it'
+      path: '/type-it'
+      fullPath: '/type-it'
+      preLoaderRoute: typeof TypeItRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FlashcardsRoute: FlashcardsRoute,
+  ListenRoute: ListenRoute,
+  MultipleChoiceRoute: MultipleChoiceRoute,
+  PronounceRoute: PronounceRoute,
+  TablesRoute: TablesRoute,
+  TypeItRoute: TypeItRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
