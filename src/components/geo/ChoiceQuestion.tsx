@@ -24,7 +24,7 @@ export function ChoiceQuestion({ row, direction, onAnswer, prompt }: QuestionPro
     const onKey = (e: KeyboardEvent) => {
       const n = Number(e.key);
       if (!picked && n >= 1 && n <= options.length) choose(options[n - 1]);
-      else if (picked && e.key === "Enter") {
+      else if (picked && e.key === "Enter" && !(e.target instanceof HTMLButtonElement)) {
         e.preventDefault();
         onAnswer(picked === correct);
       }

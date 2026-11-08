@@ -36,7 +36,11 @@ function Flashcard({ row, direction, onAnswer }: QuestionProps) {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
+      const t = e.target;
+      if (t instanceof HTMLInputElement || t instanceof HTMLSelectElement) return;
+      // Buttons (and the card itself) handle Space/Enter as clicks already.
+      if ((e.key === " " || e.key === "Enter") && t instanceof HTMLElement && t.closest("button,[role=button]"))
+        return;
       if (e.key === " " || e.key === "Enter") {
         e.preventDefault();
         setFlipped((f) => !f);
