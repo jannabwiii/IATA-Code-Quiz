@@ -59,6 +59,12 @@ function Flashcard({ row, direction, onAnswer }: QuestionProps) {
           tabIndex={0}
           aria-label={flipped ? "Show question" : "Flip to see the answer"}
           onClick={() => setFlipped((f) => !f)}
+          onKeyDown={(e) => {
+            if (e.key === " " || e.key === "Enter") {
+              e.preventDefault();
+              setFlipped((f) => !f);
+            }
+          }}
           className={cn("flip-inner h-[26rem] cursor-pointer select-none", flipped && "is-flipped")}
         >
           <div className="flip-face flex flex-col items-center justify-center rounded-3xl bg-board p-6 shadow-[var(--shadow-board)]">
