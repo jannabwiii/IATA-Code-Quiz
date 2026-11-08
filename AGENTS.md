@@ -28,3 +28,10 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+
+- Study data lives only in `src/lib/geo-raw.ts` (copied from the user's handout pages) and is parsed in `src/lib/geo.ts`; every quiz mode reads from there so a data fix updates all modes at once.
+- Answer checking and multiple-choice option rules live in `src/lib/geo.ts` and are covered by `src/test/geo.test.ts`; change both together.
+- Progress is kept in the browser under localStorage key `wgp` with row ids `section|city|code`, matching the user's original HTML page so earlier progress carries over.
+- New quiz modes reuse `QuizShell` (setup → play → results) and are listed in `src/lib/modes.ts`, which drives the home menu.
