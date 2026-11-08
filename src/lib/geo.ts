@@ -40,6 +40,7 @@ export const AREA_LABEL: Record<Area, string> = {
 };
 
 export const SECTION_NAMES = SECTIONS.map((s) => s[0]);
+export const SECTIONS_META = SECTIONS.map(([name, area], si) => ({ si, name, area: area as Area }));
 
 export function parseCodes(raw: string): GeoCode[] {
   return raw.split("/").map((c) => {
