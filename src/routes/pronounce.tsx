@@ -84,6 +84,7 @@ function PronouncePage() {
         return;
       }
       const item = queue[n++];
+      if (!item) return;
       setPlayingRow(item.row.id);
       document.getElementById(`p-${item.row.id}`)?.scrollIntoView({ block: "center", behavior: "smooth" });
       const voice = speak(item.text, item.lang, () => setTimeout(next, 300));
@@ -150,6 +151,7 @@ function PronouncePage() {
         {groups.length === 0 && <p className="text-muted-foreground">No matches.</p>}
         {groups.map(([si, list]) => {
           const meta = SECTIONS_META[si];
+          if (!meta) return null;
           return (
             <div key={si} className="overflow-x-auto rounded-2xl border border-border bg-card shadow-[var(--shadow-ticket)]">
               <table className="w-full min-w-[560px] border-separate border-spacing-0 text-sm">

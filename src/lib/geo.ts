@@ -60,17 +60,17 @@ function buildRows(): GeoRow[] {
         .split("; ")
         .forEach((e) => {
           const k = e.lastIndexOf(" ");
-          const nm = e.slice(0, k).split("@");
+          const [cityRaw = "", state = ""] = e.slice(0, k).split("@");
           const codeRaw = e.slice(k + 1);
           rows.push({
-            id: `${si}|${nm[0]}|${codeRaw}`,
+            id: `${si}|${cityRaw}|${codeRaw}`,
             si,
             section: name,
             area: (country === "Maldives" ? 3 : a) as Area,
             country,
-            state: nm[1] ?? "",
-            cityRaw: nm[0],
-            city: nm[0].replace(/\*/g, "").replace(/\s+/g, " ").trim(),
+            state,
+            cityRaw,
+            city: cityRaw.replace(/\*/g, "").replace(/\s+/g, " ").trim(),
             codeRaw,
             codes: parseCodes(codeRaw),
           });
@@ -92,7 +92,7 @@ HINTS_RAW.split(";").forEach((s) => {
 
 const LANG_BY_COUNTRY: Record<string, string> = {};
 LANGS_RAW.split(";").forEach((s) => {
-  const [l, c] = s.split(":");
+  const [l = "en-US", c = ""] = s.split(":");
   c.split(",").forEach((x) => (LANG_BY_COUNTRY[x] = l));
 });
 const LANG_OVERRIDE: Record<string, string> = {
@@ -155,7 +155,7 @@ export function checkField(field: Field, row: GeoRow, value: string): boolean {
   const base = field === "country" ? row.country : field === "state" ? row.state : row.city;
   let list = [base];
   if (field === "state") list = list.concat(base.split(" – "));
-  if (field === "city") list.push(base.replace(/\(.*?\)/g, ""), base.split("-")[0], base.split("/")[0]);
+  if (field === "city") list.push(base.replace(/\(.*?\)/g, ""), base.split("-")[0] ?? base, base.split("/")[0] ?? base);
   if (field === "country") list = list.concat(COUNTRY_ALIASES[base] ?? []);
   return list.map(normalize).includes(x);
 }
@@ -232,7 +232,9 @@ export function shuffle<T>(arr: T[], rand: () => number = Math.random): T[] {
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(rand() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+    const t = a[i] as T;
+    a[i] = a[j] as T;
+    a[j] = t;
   }
   return a;
 }

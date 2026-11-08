@@ -11,7 +11,7 @@ const KIND_CLASS: Record<CodeKind, string> = {
   p: "bg-code-p",
 };
 
-export function CodeChip({ code, className }: { code: GeoCode; className?: string }) {
+export function CodeChip({ code, className }: { code: GeoCode; className?: string | undefined }) {
   return (
     <span
       className={cn(
@@ -25,7 +25,7 @@ export function CodeChip({ code, className }: { code: GeoCode; className?: strin
   );
 }
 
-export function CodeChips({ codes, className }: { codes: GeoCode[]; className?: string }) {
+export function CodeChips({ codes, className }: { codes: GeoCode[]; className?: string | undefined }) {
   return (
     <span className="inline-flex flex-wrap gap-1">
       {codes.map((c) => (

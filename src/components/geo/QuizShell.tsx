@@ -53,7 +53,7 @@ export function QuizShell({
   renderQuestion: (p: QuestionProps) => ReactNode;
 }) {
   const progress = useProgress();
-  const [settings, setSettings] = useState<QuizSettings>({ ...DEFAULT_SETTINGS, direction: directions[0] });
+  const [settings, setSettings] = useState<QuizSettings>({ ...DEFAULT_SETTINGS, direction: directions[0] ?? "city-code" });
   const [phase, setPhase] = useState<"setup" | "play" | "done">("setup");
   const [queue, setQueue] = useState<GeoRow[]>([]);
   const [idx, setIdx] = useState(0);
@@ -75,6 +75,7 @@ export function QuizShell({
 
   const onAnswer = (correct: boolean) => {
     const row = queue[idx];
+    if (!row) return;
     setMark(row.id, correct ? "k" : "m");
     setResults((r) => [...r, { row, correct }]);
     if (idx + 1 >= queue.length) setPhase("done");

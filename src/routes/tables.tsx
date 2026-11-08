@@ -280,6 +280,7 @@ function TablesPage() {
         {groups.length === 0 && <p className="text-muted-foreground">No rows match these filters.</p>}
         {groups.map(([si, rows]) => {
           const meta = SECTIONS_META[si];
+          if (!meta) return null;
           return (
             <div key={si} className="overflow-x-auto rounded-2xl border border-border bg-card shadow-[var(--shadow-ticket)]">
               <table className="w-full min-w-[640px] border-separate border-spacing-0 text-sm">
