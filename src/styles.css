@@ -83,6 +83,8 @@
 
 :root {
   --radius: 0.9rem;
+  /* Height of the sticky site header. Sticky bars on pages sit just below it. */
+  --header-h: 3.5rem;
   --background: oklch(0.972 0.014 85);
   --foreground: oklch(0.23 0.04 258);
   --card: oklch(0.993 0.006 85);
@@ -178,11 +180,14 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
-    background-image: radial-gradient(
-      oklch(0.23 0.04 258 / 0.06) 1px,
-      transparent 1px
-    );
-    background-size: 22px 22px;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  /* Keyboard focus is always visible, on every button, link and field. */
+  :focus-visible {
+    outline: 3px solid var(--color-ring);
+    outline-offset: 2px;
   }
 
   h1,
@@ -251,6 +256,60 @@
 
   .pop-in {
     animation: pop-in 0.25s ease-out;
+  }
+}
+
+
+/*
+ * Building blocks: reuse these instead of long utility strings.
+ *   .page            page width and padding
+ *   .panel           a white box with a border
+ *   .section-title   heading for a part of a page
+ *   .field-label     plain label above a control (sentence case, no shouting)
+ *   .help            small grey explanation under a heading or control
+ *   .table-controls  toolbar that stays on screen while you scroll a long table
+ */
+@layer components {
+  .page {
+    max-width: 64rem;
+    margin-inline: auto;
+    padding: 1.5rem 1rem 5rem;
+  }
+  .panel {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-ticket);
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .field-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-muted-foreground);
+  }
+  .help {
+    font-size: 0.9375rem;
+    color: var(--color-muted-foreground);
+  }
+  .table-controls {
+    position: sticky;
+    top: calc(var(--header-h) + 1px);
+    z-index: 20;
+    display: grid;
+    gap: 0.6rem;
+    margin-top: 1.25rem;
+    padding: 0.75rem;
+    background: color-mix(in oklab, var(--color-card) 94%, transparent);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-ticket);
   }
 }
 

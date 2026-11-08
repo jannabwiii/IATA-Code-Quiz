@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Check, Eye, Shuffle, X } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Check, Eye, EyeOff, GraduationCap, Shuffle, SlidersHorizontal, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 
 import { AreaBadge, CodeChips, FieldSelect, Legend } from "@/components/geo/bits";
@@ -76,6 +76,7 @@ function TablesPage() {
   const [round, setRound] = useState(0);
   const [frozen, setFrozen] = useState<Progress>({});
   const [confirmReset, setConfirmReset] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   // Rows are picked when filters change, so marking a row doesn't make it vanish mid-drill.
   useEffect(() => setFrozen(getProgress()), [section, area, rowsFilter, round]);
@@ -166,113 +167,148 @@ function TablesPage() {
   const shownMissed = visible.filter((r) => progress[r.id] === "m").length;
 
   return (
-    <main className="mx-auto max-w-5xl px-4 pb-20 pt-6">
+    <main className="page pt-6">
       <h1 className="text-3xl font-extrabold sm:text-4xl">Table drill</h1>
-      <p className="mt-1 max-w-2xl text-muted-foreground">
-        Every table from the handout. Hide the columns you want to test, type into the grey boxes and press Enter.
+      <p className="help mt-1 max-w-2xl">
+        Choose which columns to hide. Then type the answer into each grey box and press Enter. A correct answer turns
+        green. Press Enter on an empty box to see the answer. The toolbar below stays on screen while you scroll.
       </p>
 
-      <section className="mt-6 grid gap-3 sm:grid-cols-3">
-        {([1, 2, 3] as const).map((a) => (
-          <div key={a} className="ticket overflow-hidden">
-            <div className={cn("h-1.5", a === 1 ? "bg-area-1" : a === 2 ? "bg-area-2" : "bg-area-3")} />
-            <div className="p-4">
-              <h3 className="font-bold">{AREA_LABEL[a]}</h3>
-              <p className="text-sm text-muted-foreground">
-                {a === 1 && "North and South America, the Caribbean, Greenland, Hawaii."}
-                {a === 2 && "Europe, Africa, and Asia up to and including Iran."}
-                {a === 3 && "Asia east of Iran, Australia, New Zealand, the Pacific. Manila is here."}
-              </p>
+      <details className="panel mt-4 py-3">
+        <summary className="cursor-pointer font-semibold">What are TC areas?</summary>
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+          {([1, 2, 3] as const).map((a) => (
+            <div key={a} className="overflow-hidden rounded-xl border border-border">
+              <div className={cn("h-1.5", a === 1 ? "bg-area-1" : a === 2 ? "bg-area-2" : "bg-area-3")} />
+              <div className="p-3">
+                <h3 className="font-bold">{AREA_LABEL[a]}</h3>
+                <p className="help text-sm">
+                  {a === 1 && "North and South America, the Caribbean, Greenland, Hawaii."}
+                  {a === 2 && "Europe, Africa, and Asia up to and including Iran."}
+                  {a === 3 && "Asia east of Iran, Australia, New Zealand, the Pacific. Manila is here."}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
-      </section>
+          ))}
+        </div>
+      </details>
 
-      <div className="ticket mt-6 grid gap-5 p-5">
-        <div className="grid gap-2">
-          <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Hide these columns</span>
-          <div className="flex flex-wrap gap-2">
+      <div className="table-controls" role="region" aria-label="Table controls">
+        <div className="flex items-center gap-2">
+          <span className="field-label shrink-0">Hide columns:</span>
+          <div className="flex gap-2 overflow-x-auto py-0.5">
             {FIELDS.map((f) => (
               <Button
                 key={f.k}
                 variant={hidden.has(f.k) ? "pill-active" : "pill"}
+                size="sm"
                 aria-pressed={hidden.has(f.k)}
+                title={hidden.has(f.k) ? `${f.label} is hidden. Tap to show it.` : `Tap to hide ${f.label}`}
                 onClick={() => toggleHide(f.k)}
               >
-                {hidden.has(f.k) ? <Check /> : null}
+                {hidden.has(f.k) ? <EyeOff /> : null}
                 {f.label}
               </Button>
             ))}
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm text-muted-foreground">Quick setups:</span>
-          {PRESETS.map((p) => (
-            <Button key={p.label} variant="pill" size="sm" onClick={() => setHide(p.hide)}>
-              {p.label}
-            </Button>
-          ))}
-        </div>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <FieldSelect
-            label="Section"
-            value={String(section)}
-            onChange={(v) => setSection(v === "all" ? "all" : Number(v))}
+          <select
+            aria-label="Quick setup"
+            value=""
+            onChange={(e) => {
+              const p = PRESETS.find((x) => x.label === e.target.value);
+              if (p) setHide(p.hide);
+            }}
+            className="h-8 cursor-pointer rounded-full border border-border bg-card px-3 text-xs hover:border-foreground/40"
           >
-            <option value="all">All sections</option>
-            {SECTIONS_META.map((s) => (
-              <option key={s.si} value={s.si}>
-                {s.name}
+            <option value="">Quick setup…</option>
+            {PRESETS.map((p) => (
+              <option key={p.label} value={p.label}>
+                {p.label}
               </option>
             ))}
-          </FieldSelect>
-          <FieldSelect
-            label="TC area"
-            value={String(area)}
-            onChange={(v) => setArea(v === "all" ? "all" : (Number(v) as Area))}
-          >
-            <option value="all">All TC areas</option>
-            <option value="1">TC1 only</option>
-            <option value="2">TC2 only</option>
-            <option value="3">TC3 only</option>
-          </FieldSelect>
-          <FieldSelect label="Rows" value={rowsFilter} onChange={(v) => setRowsFilter(v as RowFilter)}>
-            <option value="all">All rows</option>
-            <option value="unknown">Not yet known</option>
-            <option value="missed">Missed only ✗</option>
-          </FieldSelect>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button variant="ink" onClick={revealAll}>
-            <Eye /> Reveal all
+          </select>
+          <Button variant="ink" size="sm" onClick={revealAll}>
+            <Eye /> Show answers
           </Button>
-          <Button variant="pill" onClick={rehide}>
-            Re-hide all
+          <Button variant="pill" size="sm" onClick={rehide}>
+            Hide answers again
           </Button>
-          <Button variant={shuffled ? "pill-active" : "pill"} onClick={() => setShuffled((s) => !s)}>
-            <Shuffle /> Shuffle: {shuffled ? "on" : "off"}
-          </Button>
-          <span className="rounded-full border border-border bg-muted px-3 py-1.5 font-mono text-xs font-bold">
-            {visible.length} rows · ✓ {shownKnown} · ✗ {shownMissed}
-          </span>
           <Button
-            variant="pill"
+            variant={shuffled ? "pill-active" : "pill"}
             size="sm"
-            className="ml-auto"
-            onClick={() => {
-              if (!confirmReset) {
-                setConfirmReset(true);
-                setTimeout(() => setConfirmReset(false), 3000);
-                return;
-              }
-              resetProgress();
-              setConfirmReset(false);
-              rehide();
-            }}
+            aria-pressed={shuffled}
+            onClick={() => setShuffled((x) => !x)}
           >
-            {confirmReset ? "Tap again to confirm" : "Reset progress"}
+            <Shuffle /> Shuffle {shuffled ? "on" : "off"}
           </Button>
+          <Button
+            variant={showFilters ? "pill-active" : "pill"}
+            size="sm"
+            aria-expanded={showFilters}
+            onClick={() => setShowFilters((x) => !x)}
+          >
+            <SlidersHorizontal /> Filters
+          </Button>
+          <span className="ml-auto rounded-full border border-border bg-muted px-3 py-1 text-xs font-semibold">
+            {visible.length} rows · ✓ {shownKnown} known · ✗ {shownMissed} missed
+          </span>
         </div>
+        {showFilters && (
+          <div className="grid max-h-[50vh] gap-4 overflow-y-auto border-t border-border pt-3">
+            <div className="grid gap-4 sm:grid-cols-3">
+              <FieldSelect
+                label="Section"
+                value={String(section)}
+                onChange={(v) => setSection(v === "all" ? "all" : Number(v))}
+              >
+                <option value="all">All sections</option>
+                {SECTIONS_META.map((s) => (
+                  <option key={s.si} value={s.si}>
+                    {s.name}
+                  </option>
+                ))}
+              </FieldSelect>
+              <FieldSelect
+                label="TC area"
+                value={String(area)}
+                onChange={(v) => setArea(v === "all" ? "all" : (Number(v) as Area))}
+              >
+                <option value="all">All TC areas</option>
+                <option value="1">TC1 only</option>
+                <option value="2">TC2 only</option>
+                <option value="3">TC3 only</option>
+              </FieldSelect>
+              <FieldSelect label="Rows" value={rowsFilter} onChange={(v) => setRowsFilter(v as RowFilter)}>
+                <option value="all">All rows</option>
+                <option value="unknown">Not yet known</option>
+                <option value="missed">Only rows I missed ✗</option>
+              </FieldSelect>
+            </div>
+            <div>
+              <Button
+                variant="pill"
+                size="sm"
+                onClick={() => {
+                  if (!confirmReset) {
+                    setConfirmReset(true);
+                    setTimeout(() => setConfirmReset(false), 3000);
+                    return;
+                  }
+                  resetProgress();
+                  setConfirmReset(false);
+                  rehide();
+                }}
+              >
+                {confirmReset ? "Tap again to erase all ✓ and ✗ marks" : "Reset all progress"}
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-4">
         <Legend />
       </div>
 
@@ -296,7 +332,7 @@ function TablesPage() {
                       {meta.name}
                     </th>
                   </tr>
-                  <tr className="text-left text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <tr className="text-left text-xs text-muted-foreground">
                     {["TC area", "Country", "State / Province", "City", "City / Airport code", ""].map((h, i) => (
                       <th key={i} className="border-b border-border bg-muted px-3 py-2 font-semibold">
                         {h}
@@ -420,16 +456,16 @@ function TablesPage() {
           </p>
         </div>
         <div className="ticket p-5">
-          <h2 className="text-xl font-bold">Study tips</h2>
-          <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm">
-            <li>
-              Learn <b>airport codes first</b>, then the short list of blue metro codes (NYC, LON, PAR, TYO…).
-            </li>
-            <li>When a city lists two codes, the first is usually the city code and the rest are airports.</li>
-            <li>Start with “City → guess code”, then drill “Missed only” with shuffle on.</li>
-            <li>Once codes feel easy, switch to “Code → guess city”, then “Guess area &amp; country”.</li>
-            <li>Spend your time on orange and purple codes. Green ones mostly guess themselves.</li>
-          </ul>
+          <h2 className="text-xl font-bold">Need a plan to memorize these?</h2>
+          <p className="help mt-2">
+            The review guide has a step-by-step method, lists of the tricky codes and a 7-day plan.
+          </p>
+          <Link
+            to="/review"
+            className="mt-4 inline-flex h-11 items-center gap-2 rounded-full bg-secondary px-6 font-semibold text-secondary-foreground hover:bg-secondary/90"
+          >
+            <GraduationCap className="size-4" /> Open the review guide
+          </Link>
         </div>
       </section>
       <p className="mt-8 text-center text-xs text-muted-foreground">

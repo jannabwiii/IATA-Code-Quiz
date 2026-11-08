@@ -83,11 +83,19 @@ export function SpeakButton({
 
 export function Legend() {
   return (
-    <div className="flex flex-wrap gap-1.5 text-xs font-semibold">
-      <span className="rounded-md bg-code-g px-2 py-1">Green: from city name</span>
-      <span className="rounded-md bg-code-b px-2 py-1">Blue: metro code</span>
-      <span className="rounded-md bg-code-o px-2 py-1">Orange: airport-name code</span>
-      <span className="rounded-md bg-code-p px-2 py-1">Purple: old/local name or odd</span>
+    <div className="grid gap-1.5 text-sm sm:grid-cols-2" aria-label="What the code colors mean">
+      <span className="rounded-md bg-code-g px-2.5 py-1.5">
+        <b>Green</b>: spelled from the city name (Manila → MNL)
+      </span>
+      <span className="rounded-md bg-code-b px-2.5 py-1.5">
+        <b>Blue</b>: metro code for the whole city (London → LON)
+      </span>
+      <span className="rounded-md bg-code-o px-2.5 py-1.5">
+        <b>Orange</b>: named after the airport (Paris → CDG)
+      </span>
+      <span className="rounded-md bg-code-p px-2.5 py-1.5">
+        <b>Purple</b>: old or local name (Mumbai → BOM)
+      </span>
     </div>
   );
 }
@@ -105,7 +113,7 @@ export function PillGroup<T extends string | number>({
 }) {
   return (
     <div className="grid gap-2">
-      <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{label}</span>
+      <span className="field-label">{label}</span>
       <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={label}>
         {options.map((o) => {
           const active = o.value === value;
@@ -145,7 +153,7 @@ export function FieldSelect({
 }) {
   return (
     <label className="grid gap-2">
-      <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{label}</span>
+      <span className="field-label">{label}</span>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
