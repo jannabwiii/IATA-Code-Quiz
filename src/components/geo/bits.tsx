@@ -149,7 +149,7 @@ export function FieldSelect({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-10 cursor-pointer rounded-full border border-border bg-card px-4 text-sm hover:border-foreground/40 focus-visible:outline-2 focus-visible:outline-ring"
+        className="h-10 w-full min-w-0 cursor-pointer rounded-full border border-border bg-card px-4 text-sm hover:border-foreground/40 focus-visible:outline-2 focus-visible:outline-ring"
       >
         {children}
       </select>
