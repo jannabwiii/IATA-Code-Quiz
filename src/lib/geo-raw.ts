@@ -1,5 +1,29 @@
 // Source data from the World Geography handout (codes + pronunciation pages).
 // Code suffixes: "~" metro code (blue), "*" airport-name code (orange), "^" old/local name (purple), none = from city name (green).
+/** Supplemental memory notes; the original handout rows below remain unchanged. */
+export const CODE_ORIGINS: Record<string, { name: string; note: string }> = {
+  BOM: { name: "Bombay", note: "Mumbai was formerly called Bombay. BOM keeps the first three letters of that older English name." },
+  PEK: { name: "Peking", note: "Peking is an older English spelling of Beijing. PEK preserves that spelling." },
+  SGN: { name: "Saigon", note: "Ho Chi Minh City was formerly called Saigon. SGN retains letters from the old name." },
+  CAN: { name: "Canton", note: "Canton is an older English name for Guangzhou. CAN comes from that older name." },
+  LED: { name: "Leningrad", note: "Saint Petersburg was called Leningrad when LED was assigned. The airport kept the code after the city was renamed." },
+  MUC: { name: "Munich", note: "Munich is München in German. MUC is associated with the city's name, rather than an airport founder." },
+  NUE: { name: "Nuernberg", note: "Nuremberg is Nürnberg in German, also written Nuernberg. NUE matches the start of that spelling." },
+  TNR: { name: "Tananarive", note: "Tananarive is the former French name of Antananarivo. TNR retains letters from that name." },
+  SSG: { name: "Santa Isabel", note: "Malabo was formerly called Santa Isabel. SSG is a legacy code from that earlier name." },
+  JFK: { name: "John F. Kennedy", note: "JFK comes from John F. Kennedy, the US president after whom the airport is named." },
+  CDG: { name: "Charles de Gaulle", note: "CDG comes from Charles de Gaulle, the French president after whom the airport is named." },
+  NRT: { name: "Narita", note: "NRT comes from Narita, the location and name of this Tokyo-area airport." },
+  HND: { name: "Haneda", note: "HND comes from Haneda, the name of this Tokyo airport." },
+  ORD: { name: "Orchard Field", note: "Chicago O’Hare was previously called Orchard Field. ORD keeps that earlier airport name." },
+  MCO: { name: "McCoy", note: "Orlando's MCO code comes from the former McCoy Air Force Base on the airport site." },
+  BNA: { name: "Berry Field", note: "Nashville's BNA comes from Berry Field Nashville, the airport's original name." },
+  FCO: { name: "Fiumicino", note: "FCO comes from Fiumicino, the town where Rome's main airport is located." },
+  ICN: { name: "Incheon", note: "ICN comes from Incheon, the city where this Seoul-area airport is located." },
+  CGK: { name: "Cengkareng", note: "CGK comes from Cengkareng, the area associated with Jakarta's Soekarno–Hatta airport." },
+  YYZ: { name: "Toronto Pearson", note: "YYZ does not spell Toronto. YZ was the local station identifier; the Canadian airport code added Y. Memorize it as a legacy identifier." },
+};
+
 export const SECTIONS: [string, number, string][] = [
 ["NORTH AMERICA",1,`Canada: Calgary@Alberta YYC^; Montreal@Quebec YMQ~/YUL^; Ottawa (bus)@Ontario YOW^; Toronto@Ontario YTO~/YYZ^; Vancouver@British Columbia YVR^
 Mexico: Cancún@Quintana Roo CUN; Mexico City@Ciudad de México MEX

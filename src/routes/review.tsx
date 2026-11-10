@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check, ChevronDown, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import { CodeMemory, MemoryName } from "@/components/geo/CodeMemory";
 import { AreaBadge, CodeChip, CodeChips, Legend } from "@/components/geo/bits";
 import { Button } from "@/components/ui/button";
 import { ROWS, SECTIONS_META, filterRows, type RowFilter } from "@/lib/geo";
@@ -12,6 +13,8 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/review")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Review guide · World Geography Codes" },
       {
         name: "description",
@@ -28,6 +31,7 @@ export const Route = createFileRoute("/review")({
 });
 
 const LINKS = [
+  { href: "#origins", label: "Why these codes?" },
   { href: "#method", label: "The method" },
   { href: "#types", label: "Code colors" },
   { href: "#cheat", label: "Tricky codes" },
@@ -134,6 +138,16 @@ function ReviewPage() {
         ))}
       </nav>
 
+      <section id="origins" className="mt-10 scroll-mt-32">
+        <h2 className="section-title">Why these codes?</h2>
+        <div className="mt-4 grid gap-5 sm:grid-cols-2">
+          {["Singapore", "Mumbai", "Beijing", "Ho Chi Minh", "Guangzhou", "Saint Petersburg", "Chicago", "Tokyo", "Paris", "Toronto"].map((city) => {
+            const row = exampleRow(city);
+            return row ? <article key={city} className="panel grid content-start gap-3"><h3 className="text-lg font-bold">{row.city}</h3><CodeMemory row={row} /></article> : null;
+          })}
+        </div>
+      </section>
+
       {/* 1. Method */}
       <section id="method" className="mt-10 scroll-mt-20">
         <h2 className="section-title">The method: 5 steps for each section</h2>
@@ -188,7 +202,7 @@ function ReviewPage() {
                     if (!r) return null;
                     return (
                       <div key={city} className="flex flex-wrap items-center gap-2">
-                        <span className="min-w-28 font-semibold">{r.city}</span>
+                        <span className="min-w-28 font-semibold"><MemoryName name={r.city} code={r.codes[0]?.c ?? ""} /></span>
                         <CodeChips codes={r.codes} />
                       </div>
                     );
@@ -333,7 +347,7 @@ function ReviewPage() {
               }}
             >
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4">
-                <span className="flex items-center gap-3">
+                <span className="flex min-w-0 flex-wrap items-center gap-2">
                   <AreaBadge area={g.area} />
                   <span className="font-bold">{g.name}</span>
                   <span className="text-sm text-muted-foreground">{g.rows.length} rows</span>
@@ -341,9 +355,9 @@ function ReviewPage() {
                 <ChevronDown className="size-5 shrink-0 transition group-open:rotate-180" />
               </summary>
               <div className="overflow-x-auto border-t border-border">
-                <table className="w-full min-w-[480px] border-separate border-spacing-0 text-sm">
+                <table className="study-table review-table w-full min-w-[480px] border-separate border-spacing-0 text-sm">
                   <thead>
-                    <tr className="text-left text-muted-foreground">
+                    <tr className="hidden sm:table-row text-left text-muted-foreground">
                       <th className="bg-muted px-4 py-2 font-semibold">Country</th>
                       <th className="bg-muted px-4 py-2 font-semibold">City</th>
                       <th className="bg-muted px-4 py-2 font-semibold">Code</th>
@@ -355,15 +369,18 @@ function ReviewPage() {
                       const mark = progress[r.id];
                       return (
                         <tr key={r.id} className={cn(mark === "m" && "bg-destructive/10")}>
-                          <td className="border-b border-border px-4 py-2 font-semibold">{r.country}</td>
+                          <td className="border-b border-border px-4 py-2 font-semibold"><span className="mobile-table-label">Country</span>{r.country}</td>
                           <td className="border-b border-border px-4 py-2">
-                            {r.city}
+                            <span className="mobile-table-label">City</span>
+                            <MemoryName name={r.city} code={r.codes[0]?.c ?? ""} />
                             {r.state && <span className="text-muted-foreground"> · {r.state}</span>}
                           </td>
                           <td className="border-b border-border px-4 py-2">
-                            <CodeChips codes={r.codes} />
+                            <span className="mobile-table-label">Code</span><CodeChips codes={r.codes} />
+                            <details className="mt-2"><summary className="cursor-pointer text-xs text-primary">Memory aid</summary><div className="mt-2"><CodeMemory row={r} /></div></details>
                           </td>
                           <td className="border-b border-border px-4 py-2">
+                            <span className="mobile-table-label">Your mark</span>
                             {mark === "k" ? (
                               <span className="inline-flex items-center gap-1 text-success">
                                 <Check className="size-4" /> Known

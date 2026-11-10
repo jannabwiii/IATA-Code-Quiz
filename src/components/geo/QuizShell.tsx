@@ -8,6 +8,8 @@ import {
   AREA_LABEL,
   DEFAULT_SETTINGS,
   DIRECTIONS,
+  DIFFICULTIES,
+  type Difficulty,
   SECTION_NAMES,
   answerText,
   filterRows,
@@ -23,6 +25,7 @@ import { CodeChips, FieldSelect, PillGroup } from "./bits";
 export interface QuestionProps {
   row: GeoRow;
   direction: Direction;
+  difficulty: Difficulty;
   index: number;
   total: number;
   onAnswer: (correct: boolean) => void;
@@ -82,7 +85,7 @@ export function QuizShell({
     else setIdx(idx + 1);
   };
 
-  const label = (d: Direction) => directionLabels?.[d] ?? DIRECTIONS.find((x) => x.id === d)!.label;
+  const label = (d: Direction) => directionLabels?.[d] ?? (DIRECTIONS.find((x) => x.id === d)?.label ?? d);
 
   return (
     <main className="mx-auto max-w-3xl px-4 pb-20 pt-6">
@@ -96,7 +99,7 @@ export function QuizShell({
       {phase === "setup" && (
         <div className="pop-in">
           <div className="mb-6 flex items-start gap-4">
-            <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground ring-1 ring-foreground/15">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground ring-1 ring-foreground/15">
               <Icon className="size-6" />
             </span>
             <div>
@@ -105,7 +108,11 @@ export function QuizShell({
             </div>
           </div>
 
-          <div className="ticket grid gap-6 p-5 sm:p-6">
+          <div className="grid gap-6 border-t border-border pt-6">
+            <div className="grid gap-2">
+              <PillGroup label="Difficulty" value={settings.difficulty} onChange={(difficulty) => update({ difficulty })} options={DIFFICULTIES.map(({ value, label }) => ({ value, label }))} />
+              <p className="help">{DIFFICULTIES.find((d) => d.value === settings.difficulty)?.note}. TC-area questions always have 3 choices.</p>
+            </div>
             <PillGroup
               label="1 · What to practice"
               value={settings.direction}
@@ -160,7 +167,7 @@ export function QuizShell({
               ]}
             />
             {setupExtra}
-            <div className="ticket-stub -mx-5 -mb-5 flex flex-wrap items-center justify-between gap-3 rounded-b-xl border-l-0 border-t-2 border-dashed border-border bg-muted/60 px-5 py-4 sm:-mx-6 sm:-mb-6 sm:px-6">
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t border-border pt-5">
               <span className="text-sm text-muted-foreground">
                 {available
                   ? `${settings.count === "all" ? available : Math.min(available, settings.count)} of ${available} matching cards, shuffled`
@@ -198,6 +205,7 @@ export function QuizShell({
             {renderQuestion({
               row: queue[idx],
               direction: settings.direction,
+              difficulty: settings.difficulty,
               index: idx,
               total: queue.length,
               onAnswer,
@@ -239,7 +247,7 @@ function Results({
 
   return (
     <div className="pop-in grid gap-6">
-      <div className="overflow-hidden rounded-2xl bg-board p-6 text-center shadow-[var(--shadow-board)] sm:p-8">
+      <div className="overflow-hidden rounded-lg bg-board p-6 text-center shadow-[var(--shadow-board)] sm:p-8">
         <div className="text-xs font-bold uppercase tracking-[0.25em] text-board-muted">Round complete</div>
         <div className="mt-3 flex justify-center gap-2">
           <span className="flap px-4 py-2 text-5xl">{right}</span>

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Headphones, Volume2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import { FieldSelect } from "@/components/geo/bits";
 import { ChoiceQuestion } from "@/components/geo/ChoiceQuestion";
 import { QuizShell, type QuestionProps } from "@/components/geo/QuizShell";
@@ -10,6 +11,8 @@ import { speakCity, speakCodes, speechPrefs, speechSupported } from "@/lib/speec
 export const Route = createFileRoute("/listen")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Listen & pick · World Geography Codes" },
       { name: "description", content: "Hear a city name or a spelled-out airport code, then pick the right match." },
       { property: "og:title", content: "Listen & pick · World Geography Codes" },
@@ -91,14 +94,14 @@ function ListenQuestion(p: QuestionProps) {
           <span className="text-xs font-bold uppercase tracking-[0.2em] text-board-muted">
             {p.direction === "code-city" ? "Listen to the code" : "Listen to the city"}
           </span>
-          <button
+          <Button variant="ghost"
             type="button"
             onClick={play}
             aria-label="Play again"
             className="flex size-24 cursor-pointer items-center justify-center rounded-full bg-primary text-primary-foreground ring-4 ring-primary/30 transition hover:scale-105 active:scale-95"
           >
             <Volume2 className="size-10" />
-          </button>
+          </Button>
           <span className="text-sm text-board-muted">Tap to hear it again</span>
         </div>
       }

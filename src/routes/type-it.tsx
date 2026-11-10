@@ -5,12 +5,14 @@ import { useRef, useState } from "react";
 import { AnswerDetails, PromptView } from "@/components/geo/QuizPrompt";
 import { QuizShell, type QuestionProps } from "@/components/geo/QuizShell";
 import { Button } from "@/components/ui/button";
-import { answerText, checkAnswer, type Direction } from "@/lib/geo";
+import { answerText, checkAnswer, DIFFICULTIES, type Direction } from "@/lib/geo";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/type-it")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Type the answer · World Geography Codes" },
       { name: "description", content: "Type airport codes, cities, countries and TC areas from memory." },
       { property: "og:title", content: "Type the answer · World Geography Codes" },
@@ -38,7 +40,7 @@ function TypeItPage() {
   );
 }
 
-function TypeQuestion({ row, direction, onAnswer }: QuestionProps) {
+function TypeQuestion({ row, direction, difficulty, onAnswer }: QuestionProps) {
   const [value, setValue] = useState("");
   const [status, setStatus] = useState<"idle" | "right" | "gaveup">("idle");
   const [wrong, setWrong] = useState(0);
@@ -58,6 +60,7 @@ function TypeQuestion({ row, direction, onAnswer }: QuestionProps) {
     if (checkAnswer(row, direction, value)) setStatus("right");
     else {
       setWrong((w) => w + 1);
+      if (wrong + 1 >= (DIFFICULTIES.find((d) => d.value === difficulty)?.attempts ?? Infinity)) setStatus("gaveup");
       setShake(true);
       setTimeout(() => setShake(false), 450);
       inputRef.current?.select();
@@ -66,10 +69,11 @@ function TypeQuestion({ row, direction, onAnswer }: QuestionProps) {
 
   return (
     <div className="grid gap-5">
-      <div className="rounded-3xl bg-board px-6 py-10 shadow-[var(--shadow-board)]">
-        <PromptView row={row} direction={direction} />
+      <div className="rounded-lg bg-board px-6 py-10 shadow-[var(--shadow-board)]">
+        <PromptView row={row} direction={direction} difficulty={difficulty} />
       </div>
 
+      {difficulty === "easy" && !done && <p className="text-center text-sm text-primary">First-letter hint: {answerText(row, direction).charAt(0)}</p>}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -89,7 +93,7 @@ function TypeQuestion({ row, direction, onAnswer }: QuestionProps) {
           spellCheck={false}
           aria-label="Your answer"
           className={cn(
-            "h-16 rounded-2xl border-2 bg-card px-5 text-center text-2xl font-semibold outline-none transition focus:border-ring",
+            "min-w-0 w-full h-16 rounded-lg border-2 bg-card px-5 text-center text-2xl font-semibold outline-none transition focus:border-ring",
             direction === "city-code" && "font-mono uppercase tracking-widest",
             shake && "shake border-destructive",
             status === "right" && "border-success bg-success/10",

@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check, Eye, EyeOff, GraduationCap, Shuffle, SlidersHorizontal, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 
+import { CodeMemory, MemoryName } from "@/components/geo/CodeMemory";
 import { AreaBadge, CodeChips, FieldSelect, Legend } from "@/components/geo/bits";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +24,8 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/tables")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Table drill · World Geography Codes" },
       {
         name: "description",
@@ -194,7 +197,7 @@ function TablesPage() {
       </details>
 
       <div className="table-controls" role="region" aria-label="Table controls">
-        <div className="flex items-center gap-2">
+        <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
           <span className="field-label shrink-0">Hide columns:</span>
           <div className="flex gap-2 overflow-x-auto py-0.5">
             {FIELDS.map((f) => (
@@ -212,7 +215,7 @@ function TablesPage() {
             ))}
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="table-actions flex flex-wrap items-center gap-2">
           <select
             aria-label="Quick setup"
             value=""
@@ -319,7 +322,7 @@ function TablesPage() {
           if (!meta) return null;
           return (
             <div key={si} className="overflow-x-auto rounded-2xl border border-border bg-card shadow-[var(--shadow-ticket)]">
-              <table className="w-full min-w-[640px] border-separate border-spacing-0 text-sm">
+              <table className="study-table w-full min-w-[640px] border-separate border-spacing-0 text-sm">
                 <thead>
                   <tr>
                     <th
@@ -366,6 +369,7 @@ function TablesPage() {
                                 st === "gu" && "shadow-[inset_0_0_0_2px_var(--color-destructive)]",
                               )}
                             >
+                              <span className="mobile-table-label">{f.label}</span>
                               {hid ? (
                                 <span className="flex items-center gap-1">
                                   <input
@@ -377,7 +381,7 @@ function TablesPage() {
                                     onKeyDown={(e) => onKey(e, r, f.k)}
                                     className="h-9 w-full min-w-20 rounded-lg border border-border bg-muted px-2 outline-none focus:border-ring focus:bg-card"
                                   />
-                                  <button
+                                  <Button variant="ghost" size="icon"
                                     type="button"
                                     tabIndex={-1}
                                     title="Give up and reveal"
@@ -386,21 +390,21 @@ function TablesPage() {
                                     className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
                                   >
                                     <Eye className="size-4" />
-                                  </button>
+                                  </Button>
                                 </span>
                               ) : f.k === "area" ? (
                                 <AreaBadge area={r.area} />
                               ) : f.k === "code" ? (
-                                <CodeChips codes={r.codes} />
+                                <><CodeChips codes={r.codes} /><details className="mt-1"><summary className="cursor-pointer text-xs text-primary">Memory aid</summary><div className="mt-2"><CodeMemory row={r} /></div></details></>
                               ) : (
-                                fieldValue(r, f.k)
+                                f.k === "city" && !isHidden(r, "code") ? <MemoryName name={r.city} code={r.codes[0]?.c ?? ""} /> : fieldValue(r, f.k)
                               )}
                             </td>
                           );
                         })}
                         <td className="w-px whitespace-nowrap border-b border-border px-2 py-2">
                           <span className="flex gap-1">
-                            <button
+                            <Button variant="ghost" size="icon"
                               type="button"
                               title="I know this"
                               aria-label="Mark as known"
@@ -411,8 +415,8 @@ function TablesPage() {
                               )}
                             >
                               <Check className="size-4" />
-                            </button>
-                            <button
+                            </Button>
+                            <Button variant="ghost" size="icon"
                               type="button"
                               title="I missed this"
                               aria-label="Mark as missed"
@@ -423,7 +427,7 @@ function TablesPage() {
                               )}
                             >
                               <X className="size-4" />
-                            </button>
+                            </Button>
                           </span>
                         </td>
                       </tr>

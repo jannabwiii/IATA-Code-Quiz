@@ -11,6 +11,8 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/flashcards")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Flashcards · World Geography Codes" },
       { name: "description", content: "Flip flashcards for IATA city and airport codes, countries and TC areas." },
       { property: "og:title", content: "Flashcards · World Geography Codes" },
@@ -31,7 +33,7 @@ function FlashcardsPage() {
   );
 }
 
-function Flashcard({ row, direction, onAnswer }: QuestionProps) {
+function Flashcard({ row, direction, difficulty, onAnswer }: QuestionProps) {
   const [flipped, setFlipped] = useState(false);
 
   useEffect(() => {
@@ -67,13 +69,14 @@ function Flashcard({ row, direction, onAnswer }: QuestionProps) {
           }}
           className={cn("flip-inner h-[26rem] cursor-pointer select-none", flipped && "is-flipped")}
         >
-          <div className="flip-face flex flex-col items-center justify-center rounded-3xl bg-board p-6 shadow-[var(--shadow-board)]">
-            <PromptView row={row} direction={direction} />
+          <div className="flip-face flex flex-col items-center justify-center rounded-lg bg-board p-6 shadow-[var(--shadow-board)]">
+            <PromptView row={row} direction={direction} difficulty={difficulty} />
+            {difficulty === "easy" && <p className="mt-4 text-sm text-primary">First-letter hint: {answerText(row, direction).charAt(0)}</p>}
             <span className="absolute bottom-5 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-board-muted">
               <RotateCw className="size-3.5" /> Tap to flip
             </span>
           </div>
-          <div className="flip-face flip-back flex flex-col justify-center gap-4 overflow-y-auto rounded-3xl border-2 border-primary bg-card p-5 shadow-[var(--shadow-ticket)] sm:p-6">
+          <div className="flip-face flip-back flex flex-col gap-4 overflow-y-auto rounded-lg border-2 border-primary bg-card p-5 shadow-[var(--shadow-ticket)] sm:p-6">
             <div className="text-center">
               <div className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Answer</div>
               <div className="font-display text-3xl font-extrabold sm:text-4xl">{answerText(row, direction)}</div>

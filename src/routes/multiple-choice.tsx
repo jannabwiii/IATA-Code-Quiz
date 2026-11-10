@@ -8,10 +8,12 @@ import { QuizShell } from "@/components/geo/QuizShell";
 export const Route = createFileRoute("/multiple-choice")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Multiple choice · World Geography Codes" },
-      { name: "description", content: "Pick the right airport code, city, country or TC area from four choices." },
+      { name: "description", content: "Pick the right airport code, city, country or TC area at your chosen difficulty." },
       { property: "og:title", content: "Multiple choice · World Geography Codes" },
-      { property: "og:description", content: "Pick the right airport code, city, country or TC area from four choices." },
+      { property: "og:description", content: "Pick the right airport code, city, country or TC area at your chosen difficulty." },
     ],
   }),
   component: MultipleChoicePage,
@@ -21,9 +23,9 @@ function MultipleChoicePage() {
   return (
     <QuizShell
       title="Multiple choice"
-      description="Four options, one right answer. Wrong picks are saved so you can drill them later."
+      description="Choose Easy, Medium or Hard. Wrong picks are saved so you can drill them later."
       icon={ListChecks}
-      renderQuestion={(p) => <ChoiceQuestion {...p} prompt={<PromptView row={p.row} direction={p.direction} />} />}
+      renderQuestion={(p) => <ChoiceQuestion {...p} prompt={<PromptView row={p.row} direction={p.direction} difficulty={p.difficulty} />} />}
     />
   );
 }

@@ -1,4 +1,4 @@
-import { HINTS_RAW, LANGS_RAW, SECTIONS } from "./geo-raw";
+import { CODE_ORIGINS, HINTS_RAW, LANGS_RAW, SECTIONS } from "./geo-raw";
 
 export type CodeKind = "g" | "b" | "o" | "p";
 export type Area = 1 | 2 | 3;
@@ -81,6 +81,29 @@ function buildRows(): GeoRow[] {
 }
 
 export const ROWS: GeoRow[] = buildRows();
+
+export { CODE_ORIGINS };
+
+/** Highlight only when every code letter appears in order; never show a partial match. */
+export function codeLetterIndices(name: string, code: string): number[] {
+  const letters = Array.from(name);
+  const indices: number[] = [];
+  let cursor = 0;
+  for (const letter of code.toLowerCase()) {
+    const index = letters.findIndex((c, i) => i >= cursor && normalize(c) === letter);
+    if (index < 0) return [];
+    indices.push(index);
+    cursor = index + 1;
+  }
+  return indices;
+}
+
+export type Difficulty = "easy" | "medium" | "hard";
+export const DIFFICULTIES = [
+  { value: "easy", label: "Easy", choices: 3, hint: true, attempts: Infinity, note: "First-letter hint · 3 choices from anywhere · retry typing" },
+  { value: "medium", label: "Medium", choices: 4, hint: false, attempts: Infinity, note: "No hints · 4 choices, preferably from the same TC area · retry typing" },
+  { value: "hard", label: "Hard", choices: 6, hint: false, attempts: 1, note: "No hints or location clues · 6 choices, preferably from the same section · one typing attempt" },
+] as const;
 
 /* ---------- Pronunciation hints & languages ---------- */
 
@@ -202,6 +225,7 @@ export type Progress = Record<string, "k" | "m">;
 export type RowFilter = "all" | "unknown" | "missed";
 
 export interface QuizSettings {
+  difficulty: Difficulty;
   direction: Direction;
   section: number | "all";
   area: Area | "all";
@@ -210,6 +234,7 @@ export interface QuizSettings {
 }
 
 export const DEFAULT_SETTINGS: QuizSettings = {
+  difficulty: "medium",
   direction: "city-code",
   section: "all",
   area: "all",
@@ -217,7 +242,7 @@ export const DEFAULT_SETTINGS: QuizSettings = {
   count: 20,
 };
 
-export function filterRows(settings: Omit<QuizSettings, "direction" | "count">, progress: Progress): GeoRow[] {
+export function filterRows(settings: Pick<QuizSettings, "section" | "area" | "rows">, progress: Progress): GeoRow[] {
   return ROWS.filter(
     (r) =>
       (settings.section === "all" || r.si === settings.section) &&
@@ -249,24 +274,24 @@ export function pickQuestions(settings: QuizSettings, progress: Progress, rand: 
  * Distractors never share the correct answer text or the same prompt (e.g. Chicago ORD vs MDW).
  * Prefers distractors from the same TC area so choices are not trivially easy.
  */
-export function buildOptions(row: GeoRow, d: Direction, rand: () => number = Math.random, n = 4): string[] {
+export function buildOptions(row: GeoRow, d: Direction, rand: () => number = Math.random, n = 4, difficulty: Difficulty = "medium"): string[] {
   const correct = answerText(row, d);
   if (d === "city-area") return ["TC1", "TC2", "TC3"];
   const key = promptKey(row, d);
   const seen = new Set([correct]);
   const out: string[] = [];
   const near = shuffle(
-    ROWS.filter((r) => r.area === row.area),
+    ROWS.filter((r) => difficulty === "easy" || (difficulty === "hard" ? r.si === row.si : r.area === row.area)),
     rand,
   );
   const far = shuffle(
-    ROWS.filter((r) => r.area !== row.area),
+    ROWS.filter((r) => difficulty !== "easy" && (difficulty === "hard" ? r.si !== row.si : r.area !== row.area)),
     rand,
   );
   for (const r of [...near, ...far]) {
     if (out.length >= n - 1) break;
     const t = answerText(r, d);
-    if (seen.has(t) || promptKey(r, d) === key) continue;
+    if (seen.has(t) || promptKey(r, d) === key || checkAnswer(row, d, t)) continue;
     if (d === "code-city" && r.city === row.city) continue;
     seen.add(t);
     out.push(t);

@@ -1,4 +1,5 @@
 import { Volume2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
@@ -63,7 +64,7 @@ export function SpeakButton({
   className?: string;
 }) {
   return (
-    <button
+    <Button
       type="button"
       onClick={(e) => {
         e.stopPropagation();
@@ -71,13 +72,15 @@ export function SpeakButton({
       }}
       title={label}
       aria-label={label}
+      variant="ghost"
+      size="icon"
       className={cn(
-        "inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border bg-card text-foreground transition hover:border-foreground/40 hover:bg-muted",
+        "inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border bg-card text-foreground transition hover:border-foreground/40 hover:bg-muted",
         className,
       )}
     >
       <Volume2 className="size-4" />
-    </button>
+    </Button>
   );
 }
 
@@ -118,21 +121,22 @@ export function PillGroup<T extends string | number>({
         {options.map((o) => {
           const active = o.value === value;
           return (
-            <button
+            <Button
               key={String(o.value)}
               type="button"
+              variant="ghost"
               role="radio"
               aria-checked={active}
               onClick={() => onChange(o.value)}
               className={cn(
-                "h-10 cursor-pointer rounded-full border px-4 text-sm transition active:scale-[0.98]",
+                "min-h-11 h-auto whitespace-normal cursor-pointer rounded-lg border px-4 text-sm transition active:scale-[0.98]",
                 active
                   ? "border-secondary bg-secondary font-semibold text-secondary-foreground"
                   : "border-border bg-card hover:border-foreground/40 hover:bg-muted",
               )}
             >
               {o.label}
-            </button>
+            </Button>
           );
         })}
       </div>
@@ -157,7 +161,7 @@ export function FieldSelect({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-10 w-full min-w-0 cursor-pointer rounded-full border border-border bg-card px-4 text-sm hover:border-foreground/40 focus-visible:outline-2 focus-visible:outline-ring"
+        className="h-10 w-full min-w-0 cursor-pointer rounded-lg border border-border bg-card px-4 text-sm hover:border-foreground/40 focus-visible:outline-2 focus-visible:outline-ring"
       >
         {children}
       </select>

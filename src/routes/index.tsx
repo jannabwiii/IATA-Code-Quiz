@@ -11,6 +11,8 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "World Geography Codes · Pick a quiz" },
       {
         name: "description",
@@ -50,11 +52,11 @@ function Index() {
   return (
     <main className="page">
       <section className="pt-4 sm:pt-8">
-        <h1 className="max-w-2xl text-4xl font-extrabold leading-[1.1] sm:text-5xl">
-          Learn the city and airport codes
+        <h1 className="max-w-2xl text-3xl font-extrabold leading-tight sm:text-5xl">
+          World Geography Codes
         </h1>
         <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-          Every city in the World Geography handout has a short code. For example, Manila is{" "}
+          Practice a little, remember more. Manila is{" "}
           <CodeChip code={{ c: "MNL", kind: "g" }} />. Choose a way to practice below. The ✓ and ✗ marks you give
           yourself are saved on this device.
         </p>
@@ -69,7 +71,7 @@ function Index() {
       </section>
 
       <section aria-labelledby="progress" className="mt-10">
-        <div className="panel grid gap-5">
+        <div className="grid gap-5 border-y border-border py-6">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <h2 id="progress" className="section-title">
@@ -128,8 +130,8 @@ function Index() {
               to={m.to}
               className="panel group flex flex-col gap-4 transition hover:border-foreground/40"
             >
-              <div className="flex items-start gap-4">
-                <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-secondary text-secondary-foreground transition group-hover:bg-primary group-hover:text-primary-foreground">
+              <div className="flex min-w-0 items-start gap-3">
+                <span className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-secondary text-secondary-foreground transition group-hover:bg-primary group-hover:text-primary-foreground">
                   <m.icon className="size-6" />
                 </span>
                 <div>
@@ -166,7 +168,7 @@ function Index() {
         <div className="mt-4 grid gap-3 sm:grid-cols-3">
           {STUDY_LINKS.map((l) => (
             <Link key={l.to} to={l.to} className="panel flex gap-3 transition hover:border-foreground/40">
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground ring-1 ring-foreground/15">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground ring-1 ring-foreground/15">
                 <l.icon className="size-5" />
               </span>
               <span>
