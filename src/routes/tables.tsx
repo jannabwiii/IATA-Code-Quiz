@@ -397,7 +397,7 @@ function TablesPage() {
                               ) : f.k === "code" ? (
                                 <><CodeChips codes={r.codes} /><details className="mt-1"><summary className="cursor-pointer text-xs text-primary">Memory aid</summary><div className="mt-2"><CodeMemory row={r} /></div></details></>
                               ) : (
-                                f.k === "city" && !hidden.has("code") ? <MemoryName name={r.city} code={r.codes[0]?.c ?? ""} /> : fieldValue(r, f.k)
+                                f.k === "city" && !isHidden(r, "code") ? <MemoryName name={r.city} code={r.codes[0]?.c ?? ""} /> : fieldValue(r, f.k)
                               )}
                             </td>
                           );
