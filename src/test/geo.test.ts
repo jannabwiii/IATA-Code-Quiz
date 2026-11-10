@@ -13,8 +13,8 @@ describe("memory aids", () => {
     expect(codeLetterIndices("Singapore", "SIN")).toEqual([0, 1, 2]);
   });
   it("explains Mumbai BOM using the former name Bombay", () => {
-    expect(CODE_ORIGINS.BOM?.name).toBe("Bombay");
-    expect(codeLetterIndices(CODE_ORIGINS.BOM?.name ?? "", "BOM")).toEqual([0, 1, 2]);
+    expect(CODE_ORIGINS["BOM"]?.name).toBe("Bombay");
+    expect(codeLetterIndices(CODE_ORIGINS["BOM"]?.name ?? "", "BOM")).toEqual([0, 1, 2]);
     expect(codeLetterIndices("Mumbai", "BOM")).toEqual([]);
   });
   it("does not highlight incomplete matches", () => {
