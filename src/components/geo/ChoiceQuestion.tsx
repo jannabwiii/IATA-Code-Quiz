@@ -2,15 +2,15 @@ import { Check, X } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
-import { answerText, buildOptions } from "@/lib/geo";
+import { answerText, buildOptions, DIFFICULTIES } from "@/lib/geo";
 import { cn } from "@/lib/utils";
 
 import { AnswerDetails } from "./QuizPrompt";
 import type { QuestionProps } from "./QuizShell";
 
 /** Multiple-choice question. `prompt` is what the player sees (or hears) before answering. */
-export function ChoiceQuestion({ row, direction, onAnswer, prompt }: QuestionProps & { prompt: ReactNode }) {
-  const options = useMemo(() => buildOptions(row, direction), [row, direction]);
+export function ChoiceQuestion({ row, direction, onAnswer, prompt, difficulty }: QuestionProps & { prompt: ReactNode }) {
+  const options = useMemo(() => buildOptions(row, direction, Math.random, DIFFICULTIES.find((d) => d.value === difficulty)?.choices ?? 4, difficulty), [row, direction, difficulty]);
   const correct = answerText(row, direction);
   const [picked, setPicked] = useState<string | null>(null);
   const isCode = direction === "city-code";
@@ -35,19 +35,20 @@ export function ChoiceQuestion({ row, direction, onAnswer, prompt }: QuestionPro
 
   return (
     <div className="grid gap-5">
-      <div className="rounded-3xl bg-board px-6 py-10 shadow-[var(--shadow-board)]">{prompt}</div>
+      <div className="rounded-lg bg-board px-6 py-10 shadow-[var(--shadow-board)]">{prompt}</div>
+      {difficulty === "easy" && !picked && <p className="text-center text-sm text-primary">First-letter hint: {correct.charAt(0)}</p>}
 
       <div className={cn("grid gap-3", options.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2")}>
         {options.map((o, i) => {
           const state = !picked ? "idle" : o === correct ? "right" : o === picked ? "wrong" : "dim";
           return (
-            <button
+            <Button variant="outline"
               key={o}
               type="button"
               disabled={!!picked}
               onClick={() => choose(o)}
               className={cn(
-                "group flex min-h-16 cursor-pointer items-center gap-3 rounded-2xl border-2 bg-card px-4 py-3 text-left transition active:scale-[0.99] disabled:cursor-default",
+                "group flex h-auto min-h-16 w-full justify-start whitespace-normal cursor-pointer items-center gap-3 rounded-lg border-2 bg-card px-4 py-3 text-left transition active:scale-[0.99] disabled:cursor-default",
                 state === "idle" && "border-border hover:-translate-y-0.5 hover:border-foreground/50",
                 state === "right" && "border-success bg-success/15",
                 state === "wrong" && "shake border-destructive bg-destructive/10",
@@ -64,7 +65,7 @@ export function ChoiceQuestion({ row, direction, onAnswer, prompt }: QuestionPro
                 {state === "right" ? <Check className="size-4" /> : state === "wrong" ? <X className="size-4" /> : i + 1}
               </span>
               <span className={cn("text-lg font-semibold", isCode && "font-mono tracking-wider")}>{o}</span>
-            </button>
+            </Button>
           );
         })}
       </div>

@@ -1,7 +1,8 @@
 import { cn } from "@/lib/utils";
-import { HINTS, type Direction, type GeoRow } from "@/lib/geo";
+import { HINTS, type Difficulty, type Direction, type GeoRow } from "@/lib/geo";
 import { speakCity, speakCodes, speakCountry } from "@/lib/speech";
 
+import { CodeMemory } from "./CodeMemory";
 import { AreaBadge, CodeChips, SpeakButton } from "./bits";
 
 const QUESTION: Record<Direction, string> = {
@@ -16,10 +17,12 @@ export function PromptView({
   row,
   direction,
   tone = "board",
+  difficulty = "medium",
 }: {
   row: GeoRow;
   direction: Direction;
   tone?: "board" | "paper";
+  difficulty?: Difficulty;
 }) {
   const board = tone === "board";
   const sub = board ? "text-board-muted" : "text-muted-foreground";
@@ -43,7 +46,7 @@ export function PromptView({
       ) : (
         <span
           className={cn(
-            "font-display text-4xl font-extrabold leading-tight sm:text-5xl",
+            "max-w-full break-words font-display text-3xl font-extrabold leading-tight sm:text-5xl",
             board ? "text-board-foreground" : "text-foreground",
           )}
         >
@@ -51,8 +54,8 @@ export function PromptView({
         </span>
       )}
       <span className={cn("text-sm", sub)}>
-        {direction === "city-code" && [row.state, row.country].filter(Boolean).join(" · ")}
-        {direction === "city-area" && row.country}
+        {difficulty !== "hard" && direction === "city-code" && [row.state, row.country].filter(Boolean).join(" · ")}
+        {difficulty !== "hard" && direction === "city-area" && row.country}
         {direction === "city-country" && row.state}
         {direction === "code-city" && row.codes.length > 1 && "Any code in the group"}
       </span>
@@ -65,7 +68,7 @@ export function AnswerDetails({ row, className }: { row: GeoRow; className?: str
   const hint = HINTS[row.city];
   const coHint = HINTS[row.country];
   return (
-    <div className={cn("grid gap-3 rounded-xl border border-border bg-card p-4 text-left", className)}>
+    <div className={cn("grid gap-3 border-t border-border bg-card py-4 text-left", className)}>
       <div className="flex flex-wrap items-center gap-2">
         <AreaBadge area={row.area} />
         <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{row.section}</span>
@@ -91,6 +94,7 @@ export function AnswerDetails({ row, className }: { row: GeoRow; className?: str
         <SpeakButton label="Hear the code spelled" onClick={() => speakCodes(row)} />
         <CodeChips codes={row.codes} className="text-base" />
       </div>
+      <CodeMemory row={row} />
     </div>
   );
 }

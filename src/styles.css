@@ -10,7 +10,7 @@
 
 /*
  * Design system: "Departure board".
- * Warm boarding-pass paper, deep navy ink, airport-signal yellow.
+ * Fresh cool paper, charcoal ink, teal accents and soft rose highlights.
  * Code-type tints (green/blue/orange/purple) and TC area colors come from the handout.
  */
 
@@ -78,38 +78,38 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   --shadow-ticket: 0 1px 0 var(--border), 0 10px 30px -14px oklch(0.25 0.04 255 / 0.35);
-  --shadow-board: 0 20px 50px -20px oklch(0.2 0.04 255 / 0.6);
+  --shadow-board: 0 4px 20px -8px oklch(0.3 0.04 185 / 0.15);
 }
 
 :root {
-  --radius: 0.9rem;
+  --radius: 0.5rem;
   /* Height of the sticky site header. Sticky bars on pages sit just below it. */
-  --header-h: 3.5rem;
-  --background: oklch(0.972 0.014 85);
-  --foreground: oklch(0.23 0.04 258);
-  --card: oklch(0.993 0.006 85);
-  --card-foreground: oklch(0.23 0.04 258);
-  --popover: oklch(0.993 0.006 85);
-  --popover-foreground: oklch(0.23 0.04 258);
-  --primary: oklch(0.86 0.16 89);
-  --primary-foreground: oklch(0.23 0.04 258);
-  --secondary: oklch(0.27 0.05 258);
-  --secondary-foreground: oklch(0.972 0.014 85);
-  --muted: oklch(0.93 0.018 85);
-  --muted-foreground: oklch(0.47 0.03 258);
-  --accent: oklch(0.92 0.07 89);
-  --accent-foreground: oklch(0.23 0.04 258);
+  --header-h: 4rem;
+  --background: oklch(0.977 0.006 190);
+  --foreground: oklch(0.25 0.017 190);
+  --card: oklch(0.998 0.002 190);
+  --card-foreground: oklch(0.25 0.017 190);
+  --popover: oklch(0.998 0.002 190);
+  --popover-foreground: oklch(0.25 0.017 190);
+  --primary: oklch(0.47 0.09 185);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.94 0.035 350);
+  --secondary-foreground: oklch(0.35 0.06 350);
+  --muted: oklch(0.949 0.012 190);
+  --muted-foreground: oklch(0.46 0.02 190);
+  --accent: oklch(0.94 0.035 185);
+  --accent-foreground: oklch(0.25 0.017 190);
   --destructive: oklch(0.58 0.2 27);
   --destructive-foreground: oklch(0.985 0.005 85);
   --success: oklch(0.6 0.14 152);
   --success-foreground: oklch(0.985 0.005 85);
-  --border: oklch(0.86 0.025 85);
-  --input: oklch(0.84 0.025 85);
-  --ring: oklch(0.72 0.15 85);
+  --border: oklch(0.87 0.016 190);
+  --input: oklch(0.8 0.022 190);
+  --ring: oklch(0.55 0.1 185);
 
-  --board: oklch(0.22 0.035 258);
-  --board-foreground: oklch(0.88 0.16 89);
-  --board-muted: oklch(0.72 0.03 258);
+  --board: oklch(0.95 0.024 185);
+  --board-foreground: oklch(0.29 0.06 185);
+  --board-muted: oklch(0.46 0.025 185);
 
   --code-g: oklch(0.85 0.1 150);
   --code-b: oklch(0.84 0.08 250);
@@ -126,29 +126,29 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.972 0.014 85);
-  --sidebar-foreground: oklch(0.23 0.04 258);
-  --sidebar-primary: oklch(0.27 0.05 258);
-  --sidebar-primary-foreground: oklch(0.972 0.014 85);
-  --sidebar-accent: oklch(0.93 0.018 85);
-  --sidebar-accent-foreground: oklch(0.23 0.04 258);
-  --sidebar-border: oklch(0.86 0.025 85);
-  --sidebar-ring: oklch(0.72 0.15 85);
+  --sidebar: oklch(0.977 0.006 190);
+  --sidebar-foreground: oklch(0.25 0.017 190);
+  --sidebar-primary: oklch(0.94 0.035 350);
+  --sidebar-primary-foreground: oklch(0.977 0.006 190);
+  --sidebar-accent: oklch(0.949 0.012 190);
+  --sidebar-accent-foreground: oklch(0.25 0.017 190);
+  --sidebar-border: oklch(0.87 0.016 190);
+  --sidebar-ring: oklch(0.55 0.1 185);
 }
 
 .dark {
   --background: oklch(0.18 0.03 258);
   --foreground: oklch(0.95 0.01 85);
-  --card: oklch(0.22 0.035 258);
+  --card: oklch(0.95 0.024 185);
   --card-foreground: oklch(0.95 0.01 85);
-  --popover: oklch(0.22 0.035 258);
+  --popover: oklch(0.95 0.024 185);
   --popover-foreground: oklch(0.95 0.01 85);
-  --primary: oklch(0.86 0.16 89);
+  --primary: oklch(0.47 0.09 185);
   --primary-foreground: oklch(0.2 0.04 258);
   --secondary: oklch(0.32 0.04 258);
   --secondary-foreground: oklch(0.95 0.01 85);
   --muted: oklch(0.27 0.035 258);
-  --muted-foreground: oklch(0.72 0.03 258);
+  --muted-foreground: oklch(0.46 0.025 185);
   --accent: oklch(0.32 0.06 89);
   --accent-foreground: oklch(0.95 0.01 85);
   --destructive: oklch(0.66 0.19 25);
@@ -157,9 +157,9 @@
   --success-foreground: oklch(0.15 0.03 258);
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.72 0.15 85);
+  --ring: oklch(0.55 0.1 185);
   --board: oklch(0.13 0.03 258);
-  --board-foreground: oklch(0.88 0.16 89);
+  --board-foreground: oklch(0.29 0.06 185);
   --board-muted: oklch(0.7 0.03 258);
   --code-g: oklch(0.45 0.09 150);
   --code-b: oklch(0.45 0.09 250);
@@ -194,7 +194,7 @@
   h2,
   h3 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
   }
 }
 
@@ -204,7 +204,7 @@
     position: relative;
     background: var(--color-card);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius);
     box-shadow: var(--shadow-ticket);
   }
   .ticket-stub {
@@ -215,17 +215,11 @@
   .flap {
     font-family: var(--font-mono);
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0;
     background: var(--color-board);
     color: var(--color-board-foreground);
     border-radius: 0.5rem;
-    background-image: linear-gradient(
-      to bottom,
-      transparent calc(50% - 0.5px),
-      oklch(0 0 0 / 0.45) calc(50% - 0.5px),
-      oklch(0 0 0 / 0.45) calc(50% + 0.5px),
-      transparent calc(50% + 0.5px)
-    );
+
   }
 
   /* Flashcard flip */
@@ -278,7 +272,7 @@
   .panel {
     background: var(--color-card);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius);
     padding: 1.25rem;
     box-shadow: var(--shadow-ticket);
   }
@@ -286,7 +280,7 @@
     font-family: var(--font-display);
     font-size: 1.5rem;
     font-weight: 800;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
   }
   .field-label {
     font-size: 0.875rem;
@@ -308,7 +302,7 @@
     background: color-mix(in oklab, var(--color-card) 94%, transparent);
     backdrop-filter: blur(8px);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius);
     box-shadow: var(--shadow-ticket);
   }
 }
@@ -342,4 +336,42 @@
     animation: none !important;
     transition: none !important;
   }
+}
+
+@layer components {
+  .memory-letter { background: var(--accent); color: var(--primary); font-weight: 800; border-bottom: 2px solid var(--primary); border-radius: 2px; }
+  .site-header-inner { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 1rem; min-height: var(--header-h); }
+  .mobile-table-label { display: none; }
+}
+@media (max-width: 639px) {
+  :root { --header-h: 7rem; }
+  .site-header-inner { grid-template-columns: minmax(0,1fr); gap: .25rem; padding-block: .65rem; }
+  .site-header-inner nav { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); width: 100%; }
+  .site-header-inner nav a { padding: .5rem .25rem; text-align: center; font-size: .8rem; }
+  .page { padding: 1.25rem 1rem 3rem; }
+  h1 { overflow-wrap: anywhere; }
+  .panel { padding: 1rem; box-shadow: none; }
+  .table-controls { gap: .5rem; padding: .65rem; }
+  .table-actions { display: flex; flex-wrap: nowrap; overflow-x: auto; padding-bottom: .25rem; }
+  .table-actions > * { flex-shrink: 0; }
+  .study-table { min-width: 0; display: block; }
+  .study-table thead { display: block; }
+  .study-table thead tr:first-child, .study-table thead tr:first-child th { display: block; }
+  .study-table thead tr:not(:first-child) { display: none; }
+  .study-table tbody { display: block; }
+  .study-table tbody tr { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); padding: .5rem; border-bottom: 1px solid var(--border); gap: .5rem; }
+  .study-table tbody td { display: block; min-width: 0; width: auto; border: 0; padding: .35rem; overflow-wrap: anywhere; }
+  .study-table tbody td:last-child { grid-column: 1 / -1; }
+  .mobile-table-label { display: block; font-size: .7rem; font-weight: 600; color: var(--muted-foreground); margin-bottom: .25rem; }
+  .study-table input { min-width: 0; }
+  .review-table tbody td:last-child { grid-column: auto; }
+}
+.dark {
+  --background: oklch(0.18 0.012 190); --foreground: oklch(0.95 0.01 190);
+  --card: oklch(0.23 0.015 190); --card-foreground: var(--foreground);
+  --popover: var(--card); --popover-foreground: var(--foreground);
+  --primary: oklch(0.78 0.1 185); --primary-foreground: oklch(0.2 0.025 185);
+  --secondary: oklch(0.3 0.04 350); --secondary-foreground: oklch(0.92 0.03 350);
+  --accent: oklch(0.3 0.04 185); --accent-foreground: var(--foreground);
+  --board: oklch(0.25 0.03 185); --board-foreground: var(--foreground); --board-muted: oklch(0.78 0.02 185);
 }
