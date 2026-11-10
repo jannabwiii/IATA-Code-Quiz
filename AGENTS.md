@@ -35,3 +35,5 @@ use the editor.
 - Answer checking and multiple-choice option rules live in `src/lib/geo.ts` and are covered by `src/test/geo.test.ts`; change both together.
 - Progress is kept in the browser under localStorage key `wgp` with row ids `section|city|code`, matching the user's original HTML page so earlier progress carries over.
 - New quiz modes reuse `QuizShell` (setup → play → results) and are listed in `src/lib/modes.ts`, which drives the home menu.
+- Difficulty rules are shared in `src/lib/geo.ts` and passed through `QuizShell`, so every quiz uses consistent assistance and choice counts.
+- Supplemental code origins live alongside the handout in `geo-raw.ts`; shared memory aids highlight only complete, ordered letter matches so they never invent a code spelling.
