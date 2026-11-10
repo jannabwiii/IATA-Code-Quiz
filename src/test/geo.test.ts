@@ -1,8 +1,46 @@
 import { describe, expect, it } from "vitest";
 
-import { ROWS, buildOptions, checkAnswer, answerText, filterRows } from "@/lib/geo";
+import { ROWS, buildOptions, checkAnswer, answerText, filterRows, codeLetterIndices, CODE_ORIGINS, DIFFICULTIES } from "@/lib/geo";
 
-const row = (city: string, code?: string) => ROWS.find((r) => r.city === city && (!code || r.codeRaw.includes(code)))!;
+const row = (city: string, code?: string) => {
+  const found = ROWS.find((r) => r.city === city && (!code || r.codeRaw.includes(code)));
+  if (!found) throw new Error(`Missing row: ${city}`);
+  return found;
+};
+
+describe("memory aids", () => {
+  it("highlights S-I-N in Singapore", () => {
+    expect(codeLetterIndices("Singapore", "SIN")).toEqual([0, 1, 2]);
+  });
+  it("explains Mumbai BOM using the former name Bombay", () => {
+    expect(CODE_ORIGINS.BOM?.name).toBe("Bombay");
+    expect(codeLetterIndices(CODE_ORIGINS.BOM?.name ?? "", "BOM")).toEqual([0, 1, 2]);
+    expect(codeLetterIndices("Mumbai", "BOM")).toEqual([]);
+  });
+  it("does not highlight incomplete matches", () => {
+    expect(codeLetterIndices("Los Angeles", "LAX")).toEqual([]);
+  });
+});
+
+describe("difficulty", () => {
+  for (const difficulty of DIFFICULTIES) {
+    it(`${difficulty.value} has ${difficulty.choices} distinct choices`, () => {
+      const opts = buildOptions(row("Singapore"), "city-code", () => .5, difficulty.choices, difficulty.value);
+      expect(opts).toHaveLength(difficulty.choices);
+      expect(new Set(opts).size).toBe(difficulty.choices);
+      expect(opts).toContain("SIN");
+    });
+  }
+  it("easy provides hints, medium and hard do not", () => {
+    expect(DIFFICULTIES.map((d) => d.hint)).toEqual([true, false, false]);
+  });
+  it("hard permits only one typing attempt", () => {
+    expect(DIFFICULTIES.find((d) => d.value === "hard")?.attempts).toBe(1);
+  });
+  it("area questions keep the three real areas even on hard", () => {
+    expect(buildOptions(row("Singapore"), "city-area", Math.random, 6, "hard")).toEqual(["TC1", "TC2", "TC3"]);
+  });
+});
 
 describe("answer checking", () => {
   it("accepts any one of a city's codes, case-insensitive", () => {
