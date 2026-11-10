@@ -11,6 +11,8 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/type-it")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Type the answer · World Geography Codes" },
       { name: "description", content: "Type airport codes, cities, countries and TC areas from memory." },
       { property: "og:title", content: "Type the answer · World Geography Codes" },

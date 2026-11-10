@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Play, Square, Volume2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { MemoryName } from "@/components/geo/CodeMemory";
 import { FieldSelect, SpeakButton } from "@/components/geo/bits";
 import { Button } from "@/components/ui/button";
 import { HINTS, ROWS, SECTIONS_META, cityLang, spokenName, type CodeKind, type GeoRow } from "@/lib/geo";
@@ -11,6 +12,8 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/pronounce")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Pronunciation guide · World Geography Codes" },
       { name: "description", content: "Hear every country, city and airport code from the handout, spoken aloud." },
       { property: "og:title", content: "Pronunciation guide · World Geography Codes" },
@@ -154,7 +157,7 @@ function PronouncePage() {
           if (!meta) return null;
           return (
             <div key={si} className="overflow-x-auto rounded-2xl border border-border bg-card shadow-[var(--shadow-ticket)]">
-              <table className="w-full min-w-[560px] border-separate border-spacing-0 text-sm">
+              <table className="study-table w-full min-w-[560px] border-separate border-spacing-0 text-sm">
                 <thead>
                   <tr>
                     <th
@@ -164,15 +167,15 @@ function PronouncePage() {
                         meta.area === 1 ? "bg-area-1" : meta.area === 2 ? "bg-area-2" : "bg-area-3",
                       )}
                     >
-                      <span className="flex items-center justify-between gap-2">
+                      <span className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
                         {meta.name}
-                        <button
+                        <Button variant="ghost"
                           type="button"
                           onClick={() => playTable(list)}
                           className="inline-flex h-8 cursor-pointer items-center gap-1 rounded-full border border-area-foreground/50 bg-area-foreground/15 px-3 text-sm font-semibold hover:bg-area-foreground/25"
                         >
                           <Play className="size-3.5" /> Play table
-                        </button>
+                        </Button>
                       </span>
                     </th>
                   </tr>
@@ -192,6 +195,7 @@ function PronouncePage() {
                       className={cn("transition", playingRow === r.id ? "bg-success/20" : "hover:bg-muted/50")}
                     >
                       <td className="border-b border-border px-3 py-2 align-top">
+                        <span className="mobile-table-label">Country</span>
                         <span className="flex items-start gap-2">
                           <SpeakButton
                             label={`Hear ${r.country}`}
@@ -209,7 +213,7 @@ function PronouncePage() {
                         <span className="flex items-start gap-2">
                           <SpeakButton label={`Hear ${r.city}`} onClick={() => once(r.city, speakCity(r))} />
                           <span>
-                            {r.cityRaw}
+                            <span className="mobile-table-label">City</span><MemoryName name={r.cityRaw} code={r.codes[0]?.c ?? ""} />
                             {HINTS[r.city] && (
                               <span className="block text-xs text-muted-foreground">{HINTS[r.city]}</span>
                             )}
@@ -217,9 +221,9 @@ function PronouncePage() {
                         </span>
                       </td>
                       <td className="border-b border-border px-3 py-2 align-top">
-                        <span className="flex flex-wrap gap-1.5">
+                        <span className="mobile-table-label">Code</span><span className="flex flex-wrap gap-1.5">
                           {r.codes.map((c) => (
-                            <button
+                            <Button variant="ghost"
                               key={c.c}
                               type="button"
                               onClick={() => once(c.c.split("").join(" "), speakCode(c.c))}
@@ -229,7 +233,7 @@ function PronouncePage() {
                               )}
                             >
                               <Volume2 className="size-3.5" /> {c.c}
-                            </button>
+                            </Button>
                           ))}
                         </span>
                       </td>
