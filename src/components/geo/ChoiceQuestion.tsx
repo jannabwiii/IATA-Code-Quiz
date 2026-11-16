@@ -34,7 +34,8 @@ export function ChoiceQuestion({ row, direction, onAnswer, prompt, difficulty }:
   });
 
   return (
-    <div className="grid gap-5">
+    <div className="quiz-layout">
+      <div className="quiz-main">
       <div className="rounded-lg bg-board px-6 py-10 shadow-[var(--shadow-board)]">{prompt}</div>
       {difficulty === "easy" && !picked && <p className="text-center text-sm text-primary">First-letter hint: {correct.charAt(0)}</p>}
 
@@ -80,13 +81,14 @@ export function ChoiceQuestion({ row, direction, onAnswer, prompt, difficulty }:
           >
             {picked === correct ? "Correct!" : `Not quite. It's ${correct}.`}
           </div>
-          <AnswerDetails row={row} />
           <Button variant="hero" size="xl" autoFocus onClick={() => onAnswer(picked === correct)}>
             Next
           </Button>
         </div>
       )}
       {!picked && <p className="text-center text-xs text-muted-foreground">Keyboard: press 1–{options.length} to answer, Enter for next</p>}
+      </div>
+      {picked && <aside className="quiz-details pop-in"><AnswerDetails row={row} /></aside>}
     </div>
   );
 }

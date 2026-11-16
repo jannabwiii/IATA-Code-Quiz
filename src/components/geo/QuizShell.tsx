@@ -88,7 +88,7 @@ export function QuizShell({
   const label = (d: Direction) => directionLabels?.[d] ?? (DIRECTIONS.find((x) => x.id === d)?.label ?? d);
 
   return (
-    <main className="mx-auto max-w-3xl px-4 pb-20 pt-6">
+    <main className={phase === "play" ? "mx-auto max-w-6xl px-4 pb-20 pt-6" : "mx-auto max-w-3xl px-4 pb-20 pt-6"}>
       <Link
         to="/"
         className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground"

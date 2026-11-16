@@ -9,8 +9,10 @@ export function MemoryName({ name, code }: { name: string; code: string }) {
 }
 
 export function CodeMemory({ row }: { row: GeoRow }) {
+  const codes = row.codes.filter((code) => needsCodeMemory(row, code.c));
+  if (!codes.length) return null;
   return <div className="grid gap-3">
-    {row.codes.map((code) => {
+    {codes.map((code) => {
       const origin = CODE_ORIGINS[code.c];
       const name = origin?.name ?? row.city;
       const matches = codeLetterIndices(name, code.c).length > 0;
@@ -26,4 +28,9 @@ export function CodeMemory({ row }: { row: GeoRow }) {
       </div>;
     })}
   </div>;
+}
+
+export function needsCodeMemory(row: GeoRow, code?: string) {
+  return row.codes.some((c) => (!code || c.c === code) &&
+    (c.kind !== "g" || codeLetterIndices(row.city, c.c).length === 0) && !!CODE_ORIGINS[c.c]);
 }

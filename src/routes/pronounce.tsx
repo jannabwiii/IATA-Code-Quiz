@@ -156,29 +156,12 @@ function PronouncePage() {
           const meta = SECTIONS_META[si];
           if (!meta) return null;
           return (
-            <div key={si} className="overflow-x-auto rounded-2xl border border-border bg-card shadow-[var(--shadow-ticket)]">
+            <details key={si} className="min-w-0 overflow-hidden rounded-lg border border-border bg-card shadow-[var(--shadow-ticket)]">
+              <summary className={cn("cursor-pointer px-4 py-3 font-display font-bold text-area-foreground", meta.area === 1 ? "bg-area-1" : meta.area === 2 ? "bg-area-2" : "bg-area-3")}>{meta.name} · {list.length} rows</summary>
+              <div className="overflow-x-auto">
+                <Button variant="ghost" size="sm" className="m-2" onClick={() => playTable(list)}><Play /> Play table</Button>
               <table className="study-table w-full min-w-[560px] border-separate border-spacing-0 text-sm">
                 <thead>
-                  <tr>
-                    <th
-                      colSpan={3}
-                      className={cn(
-                        "px-4 py-3 text-left font-display text-base font-bold text-area-foreground",
-                        meta.area === 1 ? "bg-area-1" : meta.area === 2 ? "bg-area-2" : "bg-area-3",
-                      )}
-                    >
-                      <span className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
-                        {meta.name}
-                        <Button variant="ghost"
-                          type="button"
-                          onClick={() => playTable(list)}
-                          className="inline-flex h-8 cursor-pointer items-center gap-1 rounded-full border border-area-foreground/50 bg-area-foreground/15 px-3 text-sm font-semibold hover:bg-area-foreground/25"
-                        >
-                          <Play className="size-3.5" /> Play table
-                        </Button>
-                      </span>
-                    </th>
-                  </tr>
                   <tr className="text-left text-[11px] uppercase tracking-wider text-muted-foreground">
                     {["Country", "City", "Code (tap to spell)"].map((h) => (
                       <th key={h} className="border-b border-border bg-muted px-3 py-2 font-semibold">
@@ -241,7 +224,8 @@ function PronouncePage() {
                   ))}
                 </tbody>
               </table>
-            </div>
+              </div>
+            </details>
           );
         })}
       </div>
