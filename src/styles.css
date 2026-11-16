@@ -363,6 +363,8 @@
   --primary: oklch(0.78 0.1 185); --primary-foreground: oklch(0.2 0.025 185);
   --secondary: oklch(0.3 0.04 350); --secondary-foreground: oklch(0.92 0.03 350);
   --accent: oklch(0.3 0.04 185); --accent-foreground: var(--foreground);
+  --muted: oklch(0.29 0.012 190); --muted-foreground: oklch(0.76 0.015 190);
+  color-scheme: dark;
   --board: oklch(0.25 0.03 185); --board-foreground: var(--foreground); --board-muted: oklch(0.78 0.02 185);
 }
 
@@ -371,7 +373,6 @@
   .quiz-main { display: grid; gap: 1.25rem; min-width: 0; align-content: start; }
   .quiz-details { min-width: 0; }
   .study-table { table-layout: auto; }
-  .dark { color-scheme: dark; --muted: oklch(0.29 0.012 190); --muted-foreground: oklch(0.76 0.015 190); }
 }
 @media (min-width: 1024px) {
   .quiz-layout:has(.quiz-details) { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: start; }

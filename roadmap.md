@@ -6,8 +6,8 @@
 - [x] Verify quizzes and phone layouts.
 
 # Requested refinements
-- [ ] Keep mobile table columns in one scrollable row and collapse every table.
-- [ ] Remove study plans and unnecessary memory aids.
-- [ ] Use similar multiple-choice distractors with regression tests.
-- [ ] Put answer details beside quizzes on large screens.
-- [ ] Add dark mode and verify the updated flows.
+- [x] Keep mobile table columns in one scrollable row and collapse every table.
+- [x] Remove study plans and unnecessary memory aids.
+- [x] Use similar multiple-choice distractors with regression tests.
+- [x] Put answer details beside quizzes on large screens.
+- [x] Add dark mode and verify the updated flows.
