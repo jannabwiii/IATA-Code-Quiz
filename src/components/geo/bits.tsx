@@ -144,6 +144,62 @@ export function PillGroup<T extends string | number>({
   );
 }
 
+export function MultiPillGroup<T extends string | number>({
+  label,
+  values,
+  options,
+  onChange,
+}: {
+  label: string;
+  /** Selected values; empty means "all". */
+  values: T[];
+  options: { value: T; label: ReactNode }[];
+  onChange: (v: T[]) => void;
+}) {
+  const toggle = (v: T) => onChange(values.includes(v) ? values.filter((x) => x !== v) : [...values, v]);
+  return (
+    <div className="grid gap-2">
+      <span className="field-label">{label}</span>
+      <div className="flex flex-wrap gap-2" role="group" aria-label={label}>
+        <Button
+          type="button"
+          variant="ghost"
+          aria-pressed={values.length === 0}
+          onClick={() => onChange([])}
+          className={cn(
+            "min-h-11 h-auto whitespace-normal cursor-pointer rounded-lg border px-4 text-sm transition active:scale-[0.98]",
+            values.length === 0
+              ? "border-secondary bg-secondary font-semibold text-secondary-foreground"
+              : "border-border bg-card hover:border-foreground/40 hover:bg-muted",
+          )}
+        >
+          All
+        </Button>
+        {options.map((o) => {
+          const active = values.includes(o.value);
+          return (
+            <Button
+              key={String(o.value)}
+              type="button"
+              variant="ghost"
+              aria-pressed={active}
+              onClick={() => toggle(o.value)}
+              className={cn(
+                "min-h-11 h-auto whitespace-normal cursor-pointer rounded-lg border px-4 text-sm transition active:scale-[0.98]",
+                active
+                  ? "border-secondary bg-secondary font-semibold text-secondary-foreground"
+                  : "border-border bg-card hover:border-foreground/40 hover:bg-muted",
+              )}
+            >
+              {o.label}
+            </Button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export function FieldSelect({
   label,
   value,
