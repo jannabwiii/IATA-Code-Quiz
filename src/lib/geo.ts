@@ -224,11 +224,17 @@ export function checkAnswer(row: GeoRow, d: Direction, value: string): boolean {
 export type Progress = Record<string, "k" | "m">;
 export type RowFilter = "all" | "unknown" | "missed";
 
+/** Empty array (or "all") means no filtering on that dimension. */
+export type SectionFilter = number | "all" | number[];
+export type AreaFilter = Area | "all" | Area[];
+
 export interface QuizSettings {
   difficulty: Difficulty;
   direction: Direction;
-  section: number | "all";
-  area: Area | "all";
+  /** Selected section indexes; empty = all sections. */
+  sections: number[];
+  /** Selected TC areas; empty = all areas. */
+  areas: Area[];
   rows: RowFilter;
   count: number | "all";
 }
@@ -236,17 +242,24 @@ export interface QuizSettings {
 export const DEFAULT_SETTINGS: QuizSettings = {
   difficulty: "medium",
   direction: "city-code",
-  section: "all",
-  area: "all",
+  sections: [],
+  areas: [],
   rows: "all",
   count: 20,
 };
 
-export function filterRows(settings: Pick<QuizSettings, "section" | "area" | "rows">, progress: Progress): GeoRow[] {
+function toSet<T extends number>(v: T | "all" | T[]): Set<T> | null {
+  if (v === "all" || (Array.isArray(v) && v.length === 0)) return null;
+  return new Set(Array.isArray(v) ? v : [v]);
+}
+
+export function filterRows(settings: { section?: SectionFilter; sections?: number[]; area?: AreaFilter; areas?: Area[]; rows: RowFilter }, progress: Progress): GeoRow[] {
+  const sections = toSet(settings.sections ?? settings.section ?? "all");
+  const areas = toSet(settings.areas ?? settings.area ?? "all");
   return ROWS.filter(
     (r) =>
-      (settings.section === "all" || r.si === settings.section) &&
-      (settings.area === "all" || r.area === settings.area) &&
+      (!sections || sections.has(r.si)) &&
+      (!areas || areas.has(r.area)) &&
       (settings.rows === "all" ||
         (settings.rows === "missed" && progress[r.id] === "m") ||
         (settings.rows === "unknown" && progress[r.id] !== "k")),
