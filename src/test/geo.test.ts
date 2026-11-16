@@ -64,6 +64,30 @@ describe("answer checking", () => {
 });
 
 describe("multiple choice options", () => {
+  it("offers MON as a plausible wrong abbreviation for Montreal", () => {
+    const montreal = row("Montreal");
+    const opts = buildOptions(montreal, "city-code", () => .5);
+    expect(opts).toContain("MON");
+    expect(opts).toContain(answerText(montreal, "city-code"));
+    expect(checkAnswer(montreal, "city-code", "MON")).toBe(false);
+  });
+
+  it("uses close three-letter decoys without presenting another valid city code as wrong", () => {
+    for (const city of ["Montreal", "Singapore", "New York", "Chicago"]) {
+      const r = row(city);
+      const base = r.codes[0]?.c ?? "";
+      const opts = buildOptions(r, "city-code", () => .5, 6, "hard");
+      const wrong = opts.filter((o) => o !== answerText(r, "city-code"));
+      expect(wrong).toHaveLength(5);
+      for (const option of wrong) {
+        expect(checkAnswer(r, "city-code", option)).toBe(false);
+        expect(ROWS.filter((other) => other.city === city).flatMap((other) => other.codes.map((c) => c.c))).not.toContain(option);
+        if (option !== city.replace(/[^a-z]/gi, "").toUpperCase().slice(0, 3)) {
+          expect(Array.from(base).filter((letter, i) => option[i] === letter)).toHaveLength(2);
+        }
+      }
+    }
+  });
   it("gives 4 unique options including the right one", () => {
     const r = row("Los Angeles");
     const opts = buildOptions(r, "city-code");
