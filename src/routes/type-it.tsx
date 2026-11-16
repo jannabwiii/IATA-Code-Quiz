@@ -68,7 +68,8 @@ function TypeQuestion({ row, direction, difficulty, onAnswer }: QuestionProps) {
   };
 
   return (
-    <div className="grid gap-5">
+    <div className="quiz-layout">
+      <div className="quiz-main">
       <div className="rounded-lg bg-board px-6 py-10 shadow-[var(--shadow-board)]">
         <PromptView row={row} direction={direction} difficulty={difficulty} />
       </div>
@@ -133,12 +134,13 @@ function TypeQuestion({ row, direction, difficulty, onAnswer }: QuestionProps) {
           >
             {status === "right" ? "Correct!" : `The answer is ${answerText(row, direction)}`}
           </div>
-          <AnswerDetails row={row} />
         </div>
       )}
       <p className="text-center text-xs text-muted-foreground">
         Capitals, accents and spaces don't matter. For cities with several codes, any one counts.
       </p>
+      </div>
+      {done && <aside className="quiz-details pop-in"><AnswerDetails row={row} /></aside>}
     </div>
   );
 }

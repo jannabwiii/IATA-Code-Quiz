@@ -54,7 +54,8 @@ function Flashcard({ row, direction, difficulty, onAnswer }: QuestionProps) {
   }, [flipped, onAnswer]);
 
   return (
-    <div className="grid gap-5">
+    <div className="quiz-layout">
+      <div className="quiz-main">
       <div className="flip-scene">
         <div
           role="button"
@@ -81,7 +82,7 @@ function Flashcard({ row, direction, difficulty, onAnswer }: QuestionProps) {
               <div className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Answer</div>
               <div className="font-display text-3xl font-extrabold sm:text-4xl">{answerText(row, direction)}</div>
             </div>
-            <AnswerDetails row={row} className="border-0 bg-muted/60" />
+
           </div>
         </div>
       </div>
@@ -103,6 +104,8 @@ function Flashcard({ row, direction, difficulty, onAnswer }: QuestionProps) {
       <p className="text-center text-xs text-muted-foreground">
         Keyboard: Space to flip · → knew it · ← still learning
       </p>
+      </div>
+      {flipped && <aside className="quiz-details pop-in"><AnswerDetails row={row} /></aside>}
     </div>
   );
 }

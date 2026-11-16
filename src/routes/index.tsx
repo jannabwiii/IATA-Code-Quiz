@@ -37,7 +37,7 @@ const AREA_NOTE: Record<Area, string> = {
 const AREA_BAR: Record<Area, string> = { 1: "bg-area-1", 2: "bg-area-2", 3: "bg-area-3" };
 
 const STUDY_LINKS = [
-  { to: "/review", icon: GraduationCap, title: "Review guide", body: "How to memorize everything: method, tricky codes and a 7-day plan" },
+  { to: "/review", icon: GraduationCap, title: "Review guide", body: "Code origins, tricky codes and the full review sheet" },
   { to: "/pronounce", icon: Volume2, title: "Pronunciation", body: "Hear every country, city and spelled-out code" },
   { to: "/tables", icon: BookOpen, title: "Browse the tables", body: "All handout tables, plus the Schengen country list" },
 ] as const;
@@ -65,7 +65,7 @@ function Index() {
             Start flashcards <ArrowRight />
           </Link>
           <Link to="/review" className={cn(buttonVariants({ variant: "pill", size: "xl" }))}>
-            How to memorize everything
+            Review the handout
           </Link>
         </div>
       </section>

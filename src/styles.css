@@ -339,7 +339,7 @@
 }
 
 @layer components {
-  .memory-letter { background: var(--accent); color: var(--primary); font-weight: 800; border-bottom: 2px solid var(--primary); border-radius: 2px; }
+  .memory-letter { background: transparent; color: var(--primary); font-weight: 800; }
   .site-header-inner { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 1rem; min-height: var(--header-h); }
   .mobile-table-label { display: none; }
 }
@@ -354,17 +354,7 @@
   .table-controls { gap: .5rem; padding: .65rem; }
   .table-actions { display: flex; flex-wrap: nowrap; overflow-x: auto; padding-bottom: .25rem; }
   .table-actions > * { flex-shrink: 0; }
-  .study-table { min-width: 0; display: block; }
-  .study-table thead { display: block; }
-  .study-table thead tr:first-child, .study-table thead tr:first-child th { display: block; }
-  .study-table thead tr:not(:first-child) { display: none; }
-  .study-table tbody { display: block; }
-  .study-table tbody tr { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); padding: .5rem; border-bottom: 1px solid var(--border); gap: .5rem; }
-  .study-table tbody td { display: block; min-width: 0; width: auto; border: 0; padding: .35rem; overflow-wrap: anywhere; }
-  .study-table tbody td:last-child { grid-column: 1 / -1; }
-  .mobile-table-label { display: block; font-size: .7rem; font-weight: 600; color: var(--muted-foreground); margin-bottom: .25rem; }
-  .study-table input { min-width: 0; }
-  .review-table tbody td:last-child { grid-column: auto; }
+
 }
 .dark {
   --background: oklch(0.18 0.012 190); --foreground: oklch(0.95 0.01 190);
@@ -373,5 +363,18 @@
   --primary: oklch(0.78 0.1 185); --primary-foreground: oklch(0.2 0.025 185);
   --secondary: oklch(0.3 0.04 350); --secondary-foreground: oklch(0.92 0.03 350);
   --accent: oklch(0.3 0.04 185); --accent-foreground: var(--foreground);
+  --muted: oklch(0.29 0.012 190); --muted-foreground: oklch(0.76 0.015 190);
+  color-scheme: dark;
   --board: oklch(0.25 0.03 185); --board-foreground: var(--foreground); --board-muted: oklch(0.78 0.02 185);
+}
+
+@layer components {
+  .quiz-layout { display: grid; gap: 1.5rem; min-width: 0; }
+  .quiz-main { display: grid; gap: 1.25rem; min-width: 0; align-content: start; }
+  .quiz-details { min-width: 0; }
+  .study-table { table-layout: auto; }
+}
+@media (min-width: 1024px) {
+  .quiz-layout:has(.quiz-details) { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: start; }
+  .quiz-details { border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; background: var(--card); }
 }

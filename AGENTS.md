@@ -37,3 +37,6 @@ use the editor.
 - New quiz modes reuse `QuizShell` (setup → play → results) and are listed in `src/lib/modes.ts`, which drives the home menu.
 - Difficulty rules are shared in `src/lib/geo.ts` and passed through `QuizShell`, so every quiz uses consistent assistance and choice counts.
 - Supplemental code origins live alongside the handout in `geo-raw.ts`; shared memory aids highlight only complete, ordered letter matches so they never invent a code spelling.
+- Code distractors are generated in shared quiz logic as plausible abbreviations or single-letter decoys, excluding every valid code for the same city; this keeps all choice quizzes consistent without altering study data.
+- Quiz question components share the CSS quiz-layout/quiz-main/quiz-details structure; this places revealed facts beside the question on desktop and beneath it on phones.
+- Theme selection uses the document dark class and browser preference key `wgc-theme`; this preserves the existing semantic color tokens across pages without changing study progress.

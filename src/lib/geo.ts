@@ -272,7 +272,8 @@ export function pickQuestions(settings: QuizSettings, progress: Progress, rand: 
 /**
  * Multiple-choice options: the correct answer plus distinct distractors.
  * Distractors never share the correct answer text or the same prompt (e.g. Chicago ORD vs MDW).
- * Prefers distractors from the same TC area so choices are not trivially easy.
+ * Code distractors resemble the answer or a plausible city abbreviation, but never
+ * accept another listed code for that city as a wrong answer.
  */
 export function buildOptions(row: GeoRow, d: Direction, rand: () => number = Math.random, n = 4, difficulty: Difficulty = "medium"): string[] {
   const correct = answerText(row, d);
@@ -280,6 +281,23 @@ export function buildOptions(row: GeoRow, d: Direction, rand: () => number = Mat
   const key = promptKey(row, d);
   const seen = new Set([correct]);
   const out: string[] = [];
+  if (d === "city-code") {
+    const valid = new Set(ROWS.filter((r) => r.city === row.city).flatMap((r) => r.codes.map((c) => c.c)));
+    const add = (text: string) => {
+      if (out.length >= n - 1 || text.length !== 3 || valid.has(text) || seen.has(text)) return;
+      seen.add(text);
+      out.push(text);
+    };
+    const cityLetters = normalize(row.city).toUpperCase();
+    add(cityLetters.slice(0, 3));
+    const base = row.codes[0]?.c ?? "";
+    // Single-letter changes are deliberate quiz decoys, not additions to the handout.
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const candidates = shuffle(Array.from(alphabet).flatMap((letter) =>
+      [0, 1, 2].map((i) => base.slice(0, i) + letter + base.slice(i + 1))), rand);
+    for (const candidate of candidates) add(candidate);
+    return shuffle([correct, ...out], rand);
+  }
   const near = shuffle(
     ROWS.filter((r) => difficulty === "easy" || (difficulty === "hard" ? r.si === row.si : r.area === row.area)),
     rand,
@@ -288,7 +306,12 @@ export function buildOptions(row: GeoRow, d: Direction, rand: () => number = Mat
     ROWS.filter((r) => difficulty !== "easy" && (difficulty === "hard" ? r.si !== row.si : r.area !== row.area)),
     rand,
   );
-  for (const r of [...near, ...far]) {
+  const similarity = (text: string) => {
+    const a = normalize(correct), b = normalize(text);
+    return Array.from(a).reduce((score, letter, i) => score + (b[i] === letter ? 3 : b.includes(letter) ? 1 : 0), 0);
+  };
+  const candidates = [...near, ...far].sort((a, b) => similarity(answerText(b, d)) - similarity(answerText(a, d)));
+  for (const r of candidates) {
     if (out.length >= n - 1) break;
     const t = answerText(r, d);
     if (seen.has(t) || promptKey(r, d) === key || checkAnswer(row, d, t)) continue;

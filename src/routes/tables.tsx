@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check, Eye, EyeOff, GraduationCap, Shuffle, SlidersHorizontal, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 
-import { CodeMemory, MemoryName } from "@/components/geo/CodeMemory";
+import { CodeMemory, MemoryName, needsCodeMemory } from "@/components/geo/CodeMemory";
 import { AreaBadge, CodeChips, FieldSelect, Legend } from "@/components/geo/bits";
 import { Button } from "@/components/ui/button";
 import {
@@ -321,20 +321,11 @@ function TablesPage() {
           const meta = SECTIONS_META[si];
           if (!meta) return null;
           return (
-            <div key={si} className="overflow-x-auto rounded-2xl border border-border bg-card shadow-[var(--shadow-ticket)]">
+            <details key={si} className="group min-w-0 overflow-hidden rounded-lg border border-border bg-card shadow-[var(--shadow-ticket)]">
+              <summary className={cn("cursor-pointer px-4 py-3 font-display font-bold text-area-foreground", meta.area === 1 ? "bg-area-1" : meta.area === 2 ? "bg-area-2" : "bg-area-3")}>{meta.name} · {rows.length} rows</summary>
+              <div className="overflow-x-auto">
               <table className="study-table w-full min-w-[640px] border-separate border-spacing-0 text-sm">
                 <thead>
-                  <tr>
-                    <th
-                      colSpan={6}
-                      className={cn(
-                        "px-4 py-3 text-left font-display text-base font-bold tracking-wide text-area-foreground",
-                        meta.area === 1 ? "bg-area-1" : meta.area === 2 ? "bg-area-2" : "bg-area-3",
-                      )}
-                    >
-                      {meta.name}
-                    </th>
-                  </tr>
                   <tr className="text-left text-xs text-muted-foreground">
                     {["TC area", "Country", "State / Province", "City", "City / Airport code", ""].map((h, i) => (
                       <th key={i} className="border-b border-border bg-muted px-3 py-2 font-semibold">
@@ -395,7 +386,7 @@ function TablesPage() {
                               ) : f.k === "area" ? (
                                 <AreaBadge area={r.area} />
                               ) : f.k === "code" ? (
-                                <><CodeChips codes={r.codes} /><details className="mt-1"><summary className="cursor-pointer text-xs text-primary">Memory aid</summary><div className="mt-2"><CodeMemory row={r} /></div></details></>
+                                <><CodeChips codes={r.codes} />{needsCodeMemory(r) && <details className="mt-1"><summary className="cursor-pointer text-xs text-primary">Code origin</summary><div className="mt-2"><CodeMemory row={r} /></div></details>}</>
                               ) : (
                                 f.k === "city" && !isHidden(r, "code") ? <MemoryName name={r.city} code={r.codes[0]?.c ?? ""} /> : fieldValue(r, f.k)
                               )}
@@ -435,14 +426,15 @@ function TablesPage() {
                   })}
                 </tbody>
               </table>
-            </div>
+              </div>
+            </details>
           );
         })}
       </div>
 
       <section className="mt-10 grid gap-6 md:grid-cols-2">
-        <div className="ticket p-5">
-          <h2 className="text-xl font-bold">Schengen countries (29)</h2>
+        <details className="ticket p-5">
+          <summary className="cursor-pointer text-xl font-bold">Schengen countries (29)</summary>
           <div className="mt-3 flex flex-wrap gap-1.5">
             {EU.map((c) => (
               <span key={c} className="rounded-full border border-border px-2.5 py-0.5 text-sm">
@@ -458,11 +450,11 @@ function TablesPage() {
           <p className="mt-3 text-sm text-muted-foreground">
             Orange = not in the EU. Ireland and Cyprus are EU but not Schengen.
           </p>
-        </div>
+        </details>
         <div className="ticket p-5">
-          <h2 className="text-xl font-bold">Need a plan to memorize these?</h2>
+          <h2 className="text-xl font-bold">Review the code origins</h2>
           <p className="help mt-2">
-            The review guide has a step-by-step method, lists of the tricky codes and a 7-day plan.
+            The review guide includes code origins, tricky codes and the full handout.
           </p>
           <Link
             to="/review"
