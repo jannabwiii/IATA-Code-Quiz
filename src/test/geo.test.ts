@@ -1,7 +1,6 @@
-import { QUIZ_MODES } from "@/lib/modes";
 import { describe, expect, it } from "vitest";
 
-import { ROWS, buildOptions, checkAnswer, answerText, filterRows, codeLetterIndices, CODE_ORIGINS, memoryLetterIndices } from "@/lib/geo";
+import { ROWS, buildOptions, checkAnswer, answerText, filterRows, codeLetterIndices, CODE_ORIGINS, DIFFICULTIES } from "@/lib/geo";
 
 const row = (city: string, code?: string) => {
   const found = ROWS.find((r) => r.city === city && (!code || r.codeRaw.includes(code)));
@@ -23,32 +22,23 @@ describe("memory aids", () => {
   });
 });
 
-describe("mode rules", () => {
-  it("multiple choice gives four distinct options", () => {
-    const opts = buildOptions(row("Singapore"), "city-code", () => .5);
-    expect(opts).toHaveLength(4);
-    expect(new Set(opts).size).toBe(4);
-    expect(opts).toContain("SIN");
+describe("difficulty", () => {
+  for (const difficulty of DIFFICULTIES) {
+    it(`${difficulty.value} has ${difficulty.choices} distinct choices`, () => {
+      const opts = buildOptions(row("Singapore"), "city-code", () => .5, difficulty.choices, difficulty.value);
+      expect(opts).toHaveLength(difficulty.choices);
+      expect(new Set(opts).size).toBe(difficulty.choices);
+      expect(opts).toContain("SIN");
+    });
+  }
+  it("easy provides hints, medium and hard do not", () => {
+    expect(DIFFICULTIES.map((d) => d.hint)).toEqual([true, false, false]);
   });
-  it("Phoenix distractors differ by one letter or an adjacent swap", () => {
-    for (let i = 0; i < 30; i++) {
-      const opts = buildOptions(row("Phoenix"), "city-code");
-      expect(opts).toContain("PHX");
-      for (const option of opts.filter((o) => o !== "PHX")) {
-        const changed = [...option].filter((letter, index) => letter !== "PHX"[index]).length;
-        expect(changed === 1 || ["HPX", "PXH"].includes(option)).toBe(true);
-      }
-    }
+  it("hard permits only one typing attempt", () => {
+    expect(DIFFICULTIES.find((d) => d.value === "hard")?.attempts).toBe(1);
   });
-  it("area questions keep the three real areas", () => {
-    expect(buildOptions(row("Singapore"), "city-area")).toEqual(["TC1", "TC2", "TC3"]);
-  });
-  it("city letter emphasis disappears when a table code is hidden", () => {
-    expect(memoryLetterIndices("Singapore", ["SIN"], false)).toEqual([]);
-    expect(memoryLetterIndices("Singapore", ["SIN"], true)).toEqual([0, 1, 2]);
-  });
-  it("all visible codes contribute complete matching letters", () => {
-    expect(memoryLetterIndices("Houston", ["HOU", "IAH"])).toEqual([0, 1, 2]);
+  it("area questions keep the three real areas even on hard", () => {
+    expect(buildOptions(row("Singapore"), "city-area", Math.random, 6, "hard")).toEqual(["TC1", "TC2", "TC3"]);
   });
 });
 
@@ -93,11 +83,5 @@ describe("filters", () => {
     const id = row("Manila").id;
     const out = filterRows({ section: "all", area: "all", rows: "missed" }, { [id]: "m" });
     expect(out.map((r) => r.id)).toEqual([id]);
-  });
-});
-
-describe("quiz menu", () => {
-  it("offers only Typing and Multiple Choice", () => {
-    expect(QUIZ_MODES.map((mode) => mode.to).sort()).toEqual(["/multiple-choice", "/type-it"]);
   });
 });

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ChevronDown, Play, Square, Volume2 } from "lucide-react";
+import { Play, Square, Volume2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { MemoryName } from "@/components/geo/CodeMemory";
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/pronounce")({
   component: PronouncePage,
 });
 
-const KIND_BG: Record<CodeKind, string> = { g: "text-code-g", b: "text-code-b", o: "text-code-o", p: "text-code-p" };
+const KIND_BG: Record<CodeKind, string> = { g: "bg-code-g", b: "bg-code-b", o: "bg-code-o", p: "bg-code-p" };
 
 function PronouncePage() {
   const prefs = speechPrefs.useStore();
@@ -98,14 +98,19 @@ function PronouncePage() {
 
   return (
     <main className="mx-auto max-w-5xl px-4 pb-32 pt-6">
-      <h1 className="text-3xl font-extrabold sm:text-4xl">Audio</h1>
+      <h1 className="text-3xl font-extrabold sm:text-4xl">Hear every country, city and code</h1>
+      <p className="mt-1 max-w-2xl text-muted-foreground">
+        Tap the speaker to hear a name. Tap a code to hear it spelled letter by letter. Grey text is an approximate
+        respelling, with the stressed part in CAPS.
+      </p>
+
       {!supported && (
         <p className="mt-4 rounded-xl bg-destructive/10 p-3 text-sm text-destructive">
           Your browser doesn't support spoken audio here. Try Chrome, Edge or Safari.
         </p>
       )}
 
-      <div className="mt-6 grid gap-4 border-y border-border py-4 sm:grid-cols-4">
+      <div className="ticket mt-6 grid gap-4 p-5 sm:grid-cols-4">
         <label className="grid gap-2">
           <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Search</span>
           <input
@@ -140,7 +145,9 @@ function PronouncePage() {
           <option value="normal">Normal</option>
           <option value="slow">Slow</option>
         </FieldSelect>
-
+        <p className="text-xs text-muted-foreground sm:col-span-4">
+          Voices come from your device, so quality and accent vary. Countries are always spoken in English.
+        </p>
       </div>
 
       <div className="mt-6 grid gap-6">
@@ -149,14 +156,31 @@ function PronouncePage() {
           const meta = SECTIONS_META[si];
           if (!meta) return null;
           return (
-            <details key={si} className="table-section group overflow-hidden rounded-lg border border-border bg-card">
-              <summary className="grid min-h-14 cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-4"><span className="min-w-0 font-bold">{meta.name}</span><ChevronDown className="size-5 shrink-0 transition group-open:rotate-180" /></summary>
-              <div className="overflow-x-auto border-t border-border">
-                <Button variant="pill" className="m-3" size="lg" onClick={() => playTable(list)}><Play /> Play</Button>
+            <div key={si} className="overflow-x-auto rounded-2xl border border-border bg-card shadow-[var(--shadow-ticket)]">
               <table className="study-table w-full min-w-[560px] border-separate border-spacing-0 text-sm">
                 <thead>
+                  <tr>
+                    <th
+                      colSpan={3}
+                      className={cn(
+                        "px-4 py-3 text-left font-display text-base font-bold text-area-foreground",
+                        meta.area === 1 ? "bg-area-1" : meta.area === 2 ? "bg-area-2" : "bg-area-3",
+                      )}
+                    >
+                      <span className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+                        {meta.name}
+                        <Button variant="ghost"
+                          type="button"
+                          onClick={() => playTable(list)}
+                          className="inline-flex h-8 cursor-pointer items-center gap-1 rounded-full border border-area-foreground/50 bg-area-foreground/15 px-3 text-sm font-semibold hover:bg-area-foreground/25"
+                        >
+                          <Play className="size-3.5" /> Play table
+                        </Button>
+                      </span>
+                    </th>
+                  </tr>
                   <tr className="text-left text-[11px] uppercase tracking-wider text-muted-foreground">
-                    {["Country", "City", "Code"].map((h) => (
+                    {["Country", "City", "Code (tap to spell)"].map((h) => (
                       <th key={h} className="border-b border-border bg-muted px-3 py-2 font-semibold">
                         {h}
                       </th>
@@ -189,7 +213,7 @@ function PronouncePage() {
                         <span className="flex items-start gap-2">
                           <SpeakButton label={`Hear ${r.city}`} onClick={() => once(r.city, speakCity(r))} />
                           <span>
-                            <span className="mobile-table-label">City</span><MemoryName name={r.cityRaw} codes={r.codes.map((code) => code.c)} />
+                            <span className="mobile-table-label">City</span><MemoryName name={r.cityRaw} code={r.codes[0]?.c ?? ""} />
                             {HINTS[r.city] && (
                               <span className="block text-xs text-muted-foreground">{HINTS[r.city]}</span>
                             )}
@@ -217,8 +241,7 @@ function PronouncePage() {
                   ))}
                 </tbody>
               </table>
-              </div>
-            </details>
+            </div>
           );
         })}
       </div>

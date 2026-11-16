@@ -1,12 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Check, ChevronDown, Eye, EyeOff, RotateCcw, Shuffle, SlidersHorizontal, X } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Check, Eye, EyeOff, GraduationCap, Shuffle, SlidersHorizontal, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 
-import { MemoryName } from "@/components/geo/CodeMemory";
+import { CodeMemory, MemoryName } from "@/components/geo/CodeMemory";
 import { AreaBadge, CodeChips, FieldSelect, Legend } from "@/components/geo/bits";
 import { Button } from "@/components/ui/button";
 import {
   AREA_LABEL,
+  ROWS,
   SECTIONS_META,
   checkField,
   filterRows,
@@ -43,16 +44,16 @@ export const Route = createFileRoute("/tables")({
 const FIELDS: { k: Field; label: string; ph: string }[] = [
   { k: "area", label: "TC area", ph: "1, 2 or 3" },
   { k: "country", label: "Country", ph: "country" },
-  { k: "state", label: "State", ph: "state/province" },
+  { k: "state", label: "State/Province", ph: "state/province" },
   { k: "city", label: "City", ph: "city" },
   { k: "code", label: "Code", ph: "code" },
 ];
 
 const PRESETS: { label: string; hide: Field[] }[] = [
-  { label: "Code quiz", hide: ["code"] },
-  { label: "City quiz", hide: ["city", "country", "state"] },
-  { label: "Location quiz", hide: ["area", "country", "state"] },
-  { label: "Hide all", hide: ["area", "country", "state", "city", "code"] },
+  { label: "City → guess code", hide: ["code"] },
+  { label: "Code → guess city", hide: ["city", "country", "state"] },
+  { label: "Guess area & country", hide: ["area", "country", "state"] },
+  { label: "Hide everything", hide: ["area", "country", "state", "city", "code"] },
   { label: "Show all", hide: [] },
 ];
 
@@ -165,14 +166,40 @@ function TablesPage() {
     setCells(next);
   };
 
+  const shownKnown = visible.filter((r) => progress[r.id] === "k").length;
+  const shownMissed = visible.filter((r) => progress[r.id] === "m").length;
 
   return (
     <main className="page pt-6">
-      <h1 className="text-3xl font-extrabold sm:text-4xl">Tables</h1>
+      <h1 className="text-3xl font-extrabold sm:text-4xl">Table drill</h1>
+      <p className="help mt-1 max-w-2xl">
+        Choose which columns to hide. Then type the answer into each grey box and press Enter. A correct answer turns
+        green. Press Enter on an empty box to see the answer. The toolbar below stays on screen while you scroll.
+      </p>
+
+      <details className="panel mt-4 py-3">
+        <summary className="cursor-pointer font-semibold">What are TC areas?</summary>
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+          {([1, 2, 3] as const).map((a) => (
+            <div key={a} className="overflow-hidden rounded-xl border border-border">
+              <div className={cn("h-1.5", a === 1 ? "bg-area-1" : a === 2 ? "bg-area-2" : "bg-area-3")} />
+              <div className="p-3">
+                <h3 className="font-bold">{AREA_LABEL[a]}</h3>
+                <p className="help text-sm">
+                  {a === 1 && "North and South America, the Caribbean, Greenland, Hawaii."}
+                  {a === 2 && "Europe, Africa, and Asia up to and including Iran."}
+                  {a === 3 && "Asia east of Iran, Australia, New Zealand, the Pacific. Manila is here."}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </details>
+
       <div className="table-controls" role="region" aria-label="Table controls">
-        <div className="column-controls grid gap-2">
-          <span className="field-label shrink-0">Hide</span>
-          <div className="column-buttons flex flex-wrap gap-2">
+        <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
+          <span className="field-label shrink-0">Hide columns:</span>
+          <div className="flex gap-2 overflow-x-auto py-0.5">
             {FIELDS.map((f) => (
               <Button
                 key={f.k}
@@ -198,7 +225,7 @@ function TablesPage() {
             }}
             className="h-8 cursor-pointer rounded-full border border-border bg-card px-3 text-xs hover:border-foreground/40"
           >
-            <option value="">Preset</option>
+            <option value="">Quick setup…</option>
             {PRESETS.map((p) => (
               <option key={p.label} value={p.label}>
                 {p.label}
@@ -206,10 +233,10 @@ function TablesPage() {
             ))}
           </select>
           <Button variant="ink" size="sm" onClick={revealAll}>
-            <Eye /> Reveal
+            <Eye /> Show answers
           </Button>
           <Button variant="pill" size="sm" onClick={rehide}>
-            <RotateCcw /> Rehide
+            Hide answers again
           </Button>
           <Button
             variant={shuffled ? "pill-active" : "pill"}
@@ -217,7 +244,7 @@ function TablesPage() {
             aria-pressed={shuffled}
             onClick={() => setShuffled((x) => !x)}
           >
-            <Shuffle /> Shuffle
+            <Shuffle /> Shuffle {shuffled ? "on" : "off"}
           </Button>
           <Button
             variant={showFilters ? "pill-active" : "pill"}
@@ -228,7 +255,7 @@ function TablesPage() {
             <SlidersHorizontal /> Filters
           </Button>
           <span className="ml-auto rounded-full border border-border bg-muted px-3 py-1 text-xs font-semibold">
-            {visible.length} rows
+            {visible.length} rows · ✓ {shownKnown} known · ✗ {shownMissed} missed
           </span>
         </div>
         {showFilters && (
@@ -277,14 +304,16 @@ function TablesPage() {
                   rehide();
                 }}
               >
-                {confirmReset ? "Confirm reset" : "Reset progress"}
+                {confirmReset ? "Tap again to erase all ✓ and ✗ marks" : "Reset all progress"}
               </Button>
             </div>
           </div>
         )}
       </div>
 
-      <details className="mt-4"><summary className="min-h-11 cursor-pointer py-2 font-semibold">Code colors</summary><Legend /></details>
+      <div className="mt-4">
+        <Legend />
+      </div>
 
       <div ref={tableRef} className="mt-6 grid gap-6">
         {groups.length === 0 && <p className="text-muted-foreground">No rows match these filters.</p>}
@@ -292,14 +321,20 @@ function TablesPage() {
           const meta = SECTIONS_META[si];
           if (!meta) return null;
           return (
-            <details key={si} className="table-section group overflow-hidden rounded-lg border border-border bg-card">
-              <summary className="grid min-h-14 cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-4">
-                <span className="min-w-0 font-bold">{meta.name}<span className="ml-2 text-xs font-normal text-muted-foreground">{rows.length}</span></span>
-                <ChevronDown className="size-5 shrink-0 transition group-open:rotate-180" />
-              </summary>
-              <div className="table-scroll overflow-x-auto border-t border-border">
+            <div key={si} className="overflow-x-auto rounded-2xl border border-border bg-card shadow-[var(--shadow-ticket)]">
               <table className="study-table w-full min-w-[640px] border-separate border-spacing-0 text-sm">
                 <thead>
+                  <tr>
+                    <th
+                      colSpan={6}
+                      className={cn(
+                        "px-4 py-3 text-left font-display text-base font-bold tracking-wide text-area-foreground",
+                        meta.area === 1 ? "bg-area-1" : meta.area === 2 ? "bg-area-2" : "bg-area-3",
+                      )}
+                    >
+                      {meta.name}
+                    </th>
+                  </tr>
                   <tr className="text-left text-xs text-muted-foreground">
                     {["TC area", "Country", "State / Province", "City", "City / Airport code", ""].map((h, i) => (
                       <th key={i} className="border-b border-border bg-muted px-3 py-2 font-semibold">
@@ -360,9 +395,9 @@ function TablesPage() {
                               ) : f.k === "area" ? (
                                 <AreaBadge area={r.area} />
                               ) : f.k === "code" ? (
-                                <><CodeChips codes={r.codes} /></>
+                                <><CodeChips codes={r.codes} /><details className="mt-1"><summary className="cursor-pointer text-xs text-primary">Memory aid</summary><div className="mt-2"><CodeMemory row={r} /></div></details></>
                               ) : (
-                                f.k === "city" ? <MemoryName name={r.cityRaw} codes={r.codes.map((code) => code.c)} visible={!isHidden(r, "code")} /> : fieldValue(r, f.k)
+                                f.k === "city" && !isHidden(r, "code") ? <MemoryName name={r.city} code={r.codes[0]?.c ?? ""} /> : fieldValue(r, f.k)
                               )}
                             </td>
                           );
@@ -400,18 +435,47 @@ function TablesPage() {
                   })}
                 </tbody>
               </table>
-              </div>
-            </details>
+            </div>
           );
         })}
       </div>
 
-      <details className="mt-6 group border-y border-border py-3">
-        <summary className="grid min-h-12 cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center font-bold"><span>Schengen · 29</span><ChevronDown className="size-5 transition group-open:rotate-180" /></summary>
-        <div className="mt-3 flex flex-wrap gap-2">{EU.map((country) => <span key={country} className="text-sm">{country}</span>)}{NON_EU.map((country) => <span key={country} className="text-sm font-semibold text-code-o">{country}</span>)}</div>
-        <p className="mt-3 text-sm text-muted-foreground">Orange: non-EU. Ireland and Cyprus: EU, not Schengen.</p>
-      </details>
-      <details className="mt-3"><summary className="min-h-11 cursor-pointer py-2 font-semibold">TC areas</summary><div className="grid gap-2">{([1, 2, 3] as const).map((a) => <p key={a}>{AREA_LABEL[a]}</p>)}</div></details>
+      <section className="mt-10 grid gap-6 md:grid-cols-2">
+        <div className="ticket p-5">
+          <h2 className="text-xl font-bold">Schengen countries (29)</h2>
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {EU.map((c) => (
+              <span key={c} className="rounded-full border border-border px-2.5 py-0.5 text-sm">
+                {c}
+              </span>
+            ))}
+            {NON_EU.map((c) => (
+              <span key={c} className="rounded-full border border-border bg-code-o px-2.5 py-0.5 text-sm font-bold">
+                {c}
+              </span>
+            ))}
+          </div>
+          <p className="mt-3 text-sm text-muted-foreground">
+            Orange = not in the EU. Ireland and Cyprus are EU but not Schengen.
+          </p>
+        </div>
+        <div className="ticket p-5">
+          <h2 className="text-xl font-bold">Need a plan to memorize these?</h2>
+          <p className="help mt-2">
+            The review guide has a step-by-step method, lists of the tricky codes and a 7-day plan.
+          </p>
+          <Link
+            to="/review"
+            className="mt-4 inline-flex h-11 items-center gap-2 rounded-full bg-secondary px-6 font-semibold text-secondary-foreground hover:bg-secondary/90"
+          >
+            <GraduationCap className="size-4" /> Open the review guide
+          </Link>
+        </div>
+      </section>
+      <p className="mt-8 text-center text-xs text-muted-foreground">
+        {ROWS.length} cities from the Cygnific Manila World Geography handout (internal use). Always confirm current
+        rules for real bookings.
+      </p>
     </main>
   );
 }

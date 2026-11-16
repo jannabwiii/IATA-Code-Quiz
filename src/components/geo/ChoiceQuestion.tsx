@@ -2,15 +2,15 @@ import { Check, X } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
-import { answerText, buildOptions } from "@/lib/geo";
+import { answerText, buildOptions, DIFFICULTIES } from "@/lib/geo";
 import { cn } from "@/lib/utils";
 
 import { AnswerDetails } from "./QuizPrompt";
 import type { QuestionProps } from "./QuizShell";
 
 /** Multiple-choice question. `prompt` is what the player sees (or hears) before answering. */
-export function ChoiceQuestion({ row, direction, onAnswer, prompt }: QuestionProps & { prompt: ReactNode }) {
-  const options = useMemo(() => buildOptions(row, direction), [row, direction]);
+export function ChoiceQuestion({ row, direction, onAnswer, prompt, difficulty }: QuestionProps & { prompt: ReactNode }) {
+  const options = useMemo(() => buildOptions(row, direction, Math.random, DIFFICULTIES.find((d) => d.value === difficulty)?.choices ?? 4, difficulty), [row, direction, difficulty]);
   const correct = answerText(row, direction);
   const [picked, setPicked] = useState<string | null>(null);
   const isCode = direction === "city-code";
@@ -36,9 +36,9 @@ export function ChoiceQuestion({ row, direction, onAnswer, prompt }: QuestionPro
   return (
     <div className="grid gap-5">
       <div className="rounded-lg bg-board px-6 py-10 shadow-[var(--shadow-board)]">{prompt}</div>
+      {difficulty === "easy" && !picked && <p className="text-center text-sm text-primary">First-letter hint: {correct.charAt(0)}</p>}
 
-      <div className="answer-area grid gap-3">
-      <div className={cn("choice-options grid gap-3", options.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2")}>
+      <div className={cn("grid gap-3", options.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2")}>
         {options.map((o, i) => {
           const state = !picked ? "idle" : o === correct ? "right" : o === picked ? "wrong" : "dim";
           return (
@@ -64,7 +64,7 @@ export function ChoiceQuestion({ row, direction, onAnswer, prompt }: QuestionPro
               >
                 {state === "right" ? <Check className="size-4" /> : state === "wrong" ? <X className="size-4" /> : i + 1}
               </span>
-              <span className={cn("min-w-0 break-words text-lg font-semibold", isCode && "font-mono tracking-wider")}>{o}</span>
+              <span className={cn("text-lg font-semibold", isCode && "font-mono tracking-wider")}>{o}</span>
             </Button>
           );
         })}
@@ -78,15 +78,15 @@ export function ChoiceQuestion({ row, direction, onAnswer, prompt }: QuestionPro
               picked === correct ? "text-success" : "text-destructive",
             )}
           >
-            {picked === correct ? "Correct!" : `Answer: ${correct}`}
+            {picked === correct ? "Correct!" : `Not quite. It's ${correct}.`}
           </div>
+          <AnswerDetails row={row} />
           <Button variant="hero" size="xl" autoFocus onClick={() => onAnswer(picked === correct)}>
             Next
           </Button>
         </div>
       )}
-      </div>
-      {picked && <AnswerDetails row={row} />}
+      {!picked && <p className="text-center text-xs text-muted-foreground">Keyboard: press 1–{options.length} to answer, Enter for next</p>}
     </div>
   );
 }

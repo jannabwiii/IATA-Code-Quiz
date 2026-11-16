@@ -8,6 +8,8 @@ import {
   AREA_LABEL,
   DEFAULT_SETTINGS,
   DIRECTIONS,
+  DIFFICULTIES,
+  type Difficulty,
   SECTION_NAMES,
   answerText,
   filterRows,
@@ -23,6 +25,7 @@ import { CodeChips, FieldSelect, PillGroup } from "./bits";
 export interface QuestionProps {
   row: GeoRow;
   direction: Direction;
+  difficulty: Difficulty;
   index: number;
   total: number;
   onAnswer: (correct: boolean) => void;
@@ -85,38 +88,40 @@ export function QuizShell({
   const label = (d: Direction) => directionLabels?.[d] ?? (DIRECTIONS.find((x) => x.id === d)?.label ?? d);
 
   return (
-    <main className={`quiz-page mx-auto max-w-3xl px-4 pb-20 pt-6 ${phase === "play" ? "quiz-playing" : ""}`}>
+    <main className="mx-auto max-w-3xl px-4 pb-20 pt-6">
       <Link
         to="/"
         className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground"
       >
-        <ArrowLeft className="size-4" /> Home
+        <ArrowLeft className="size-4" /> All quiz types
       </Link>
 
       {phase === "setup" && (
         <div className="pop-in">
-          <div className="mb-6 grid grid-cols-[auto_minmax(0,1fr)] items-start gap-4">
+          <div className="mb-6 flex items-start gap-4">
             <span className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground ring-1 ring-foreground/15">
               <Icon className="size-6" />
             </span>
-            <div className="min-w-0">
+            <div>
               <h1 className="text-3xl font-extrabold sm:text-4xl">{title}</h1>
-              {description && <p className="mt-1 text-muted-foreground">{description}</p>}
+              <p className="mt-1 text-muted-foreground">{description}</p>
             </div>
           </div>
 
           <div className="grid gap-6 border-t border-border pt-6">
+            <div className="grid gap-2">
+              <PillGroup label="Difficulty" value={settings.difficulty} onChange={(difficulty) => update({ difficulty })} options={DIFFICULTIES.map(({ value, label }) => ({ value, label }))} />
+              <p className="help">{DIFFICULTIES.find((d) => d.value === settings.difficulty)?.note}. TC-area questions always have 3 choices.</p>
+            </div>
             <PillGroup
-              label="Practice"
+              label="1 · What to practice"
               value={settings.direction}
               onChange={(direction) => update({ direction })}
               options={directions.map((d) => ({ value: d, label: label(d) }))}
             />
-            <details className="quiz-filters">
-              <summary className="min-h-12 cursor-pointer py-3 font-semibold">Filters</summary>
             <div className="grid gap-4 sm:grid-cols-2">
               <FieldSelect
-                label="Section"
+                label="2 · Section"
                 value={String(settings.section)}
                 onChange={(v) => update({ section: v === "all" ? "all" : Number(v) })}
               >
@@ -141,18 +146,17 @@ export function QuizShell({
               </FieldSelect>
             </div>
             <PillGroup
-              label="Cards"
+              label="Which cards"
               value={settings.rows}
               onChange={(rows) => update({ rows })}
               options={[
                 { value: "all", label: "All" },
-                { value: "unknown", label: "New" },
-                { value: "missed", label: "Missed" },
+                { value: "unknown", label: "Not yet known" },
+                { value: "missed", label: "Missed only ✗" },
               ]}
             />
-            </details>
             <PillGroup
-              label="Questions"
+              label="How many"
               value={settings.count}
               onChange={(count) => update({ count })}
               options={[
@@ -166,8 +170,8 @@ export function QuizShell({
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t border-border pt-5">
               <span className="text-sm text-muted-foreground">
                 {available
-                  ? `${settings.count === "all" ? available : Math.min(available, settings.count)} questions`
-                  : "No matches"}
+                  ? `${settings.count === "all" ? available : Math.min(available, settings.count)} of ${available} matching cards, shuffled`
+                  : "No cards match. Try “All” or another section."}
               </span>
               <Button variant="hero" size="lg" disabled={!available} onClick={() => start(pickQuestions(settings, progress))}>
                 Start
@@ -179,7 +183,7 @@ export function QuizShell({
 
       {phase === "play" && queue[idx] && (
         <div>
-          <div className="quiz-status mb-5 flex items-center gap-3">
+          <div className="mb-5 flex items-center gap-3">
             <span className="font-mono text-sm font-bold">
               {idx + 1}/{queue.length}
             </span>
@@ -201,6 +205,7 @@ export function QuizShell({
             {renderQuestion({
               row: queue[idx],
               direction: settings.direction,
+              difficulty: settings.difficulty,
               index: idx,
               total: queue.length,
               onAnswer,
@@ -238,38 +243,38 @@ function Results({
   const right = results.filter((r) => r.correct).length;
   const missed = results.filter((r) => !r.correct);
   const pct = results.length ? Math.round((right / results.length) * 100) : 0;
-  const verdict = pct === 100 ? "Perfect round!" : pct >= 80 ? "Great!" : pct >= 50 ? "Keep going" : "Keep going";
+  const verdict = pct === 100 ? "Perfect round!" : pct >= 80 ? "Great flying." : pct >= 50 ? "Getting there." : "Keep drilling.";
 
   return (
     <div className="pop-in grid gap-6">
       <div className="overflow-hidden rounded-lg bg-board p-6 text-center shadow-[var(--shadow-board)] sm:p-8">
-        <div className="text-xs font-bold uppercase tracking-[0.25em] text-board-muted">Results</div>
+        <div className="text-xs font-bold uppercase tracking-[0.25em] text-board-muted">Round complete</div>
         <div className="mt-3 flex justify-center gap-2">
           <span className="flap px-4 py-2 text-5xl">{right}</span>
           <span className="self-center font-mono text-3xl text-board-muted">/</span>
           <span className="flap px-4 py-2 text-5xl">{results.length}</span>
         </div>
         <div className="mt-4 font-display text-2xl font-bold text-board-foreground">{verdict}</div>
-        <div className="text-sm text-board-muted">{pct}% correct</div>
+        <div className="text-sm text-board-muted">{pct}% correct · saved to your progress</div>
       </div>
 
       <div className="flex flex-wrap justify-center gap-2">
         {missed.length > 0 && (
           <Button variant="hero" size="lg" onClick={onRetryMissed}>
-            <RotateCcw /> Retry {missed.length}
+            <RotateCcw /> Retry the {missed.length} missed
           </Button>
         )}
         <Button variant="ink" size="lg" onClick={onAgain}>
           New round
         </Button>
         <Button variant="pill" size="lg" onClick={onSetup}>
-          Settings
+          Change settings
         </Button>
       </div>
 
       {missed.length > 0 && (
         <div className="ticket p-5">
-          <h2 className="mb-3 text-lg font-bold">Missed</h2>
+          <h2 className="mb-3 text-lg font-bold">To review</h2>
           <ul className="divide-y divide-border">
             {missed.map(({ row }) => (
               <li key={row.id} className="flex flex-wrap items-center justify-between gap-2 py-2">

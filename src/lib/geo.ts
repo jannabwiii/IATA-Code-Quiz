@@ -98,6 +98,13 @@ export function codeLetterIndices(name: string, code: string): number[] {
   return indices;
 }
 
+export type Difficulty = "easy" | "medium" | "hard";
+export const DIFFICULTIES = [
+  { value: "easy", label: "Easy", choices: 3, hint: true, attempts: Infinity, note: "First-letter hint · 3 choices from anywhere · retry typing" },
+  { value: "medium", label: "Medium", choices: 4, hint: false, attempts: Infinity, note: "No hints · 4 choices, preferably from the same TC area · retry typing" },
+  { value: "hard", label: "Hard", choices: 6, hint: false, attempts: 1, note: "No hints or location clues · 6 choices, preferably from the same section · one typing attempt" },
+] as const;
+
 /* ---------- Pronunciation hints & languages ---------- */
 
 export const HINTS: Record<string, string> = {};
@@ -218,6 +225,7 @@ export type Progress = Record<string, "k" | "m">;
 export type RowFilter = "all" | "unknown" | "missed";
 
 export interface QuizSettings {
+  difficulty: Difficulty;
   direction: Direction;
   section: number | "all";
   area: Area | "all";
@@ -226,6 +234,7 @@ export interface QuizSettings {
 }
 
 export const DEFAULT_SETTINGS: QuizSettings = {
+  difficulty: "medium",
   direction: "city-code",
   section: "all",
   area: "all",
@@ -260,54 +269,32 @@ export function pickQuestions(settings: QuizSettings, progress: Progress, rand: 
   return settings.count === "all" ? rows : rows.slice(0, settings.count);
 }
 
-/** Code distractors are deliberate near-misses, not necessarily real airport codes. */
-export function buildOptions(row: GeoRow, d: Direction, rand: () => number = Math.random): string[] {
+/**
+ * Multiple-choice options: the correct answer plus distinct distractors.
+ * Distractors never share the correct answer text or the same prompt (e.g. Chicago ORD vs MDW).
+ * Prefers distractors from the same TC area so choices are not trivially easy.
+ */
+export function buildOptions(row: GeoRow, d: Direction, rand: () => number = Math.random, n = 4, difficulty: Difficulty = "medium"): string[] {
   const correct = answerText(row, d);
   if (d === "city-area") return ["TC1", "TC2", "TC3"];
+  const key = promptKey(row, d);
   const seen = new Set([correct]);
   const out: string[] = [];
-  if (d === "city-code") {
-    const base = row.codes[0]?.c ?? "";
-    const candidates: string[] = [];
-    for (let i = 0; i < base.length; i++) {
-      for (const letter of "ABCDEFGHIJKLMNOPQRSTUVWXYZ") {
-        if (letter !== base[i]) candidates.push(base.slice(0, i) + letter + base.slice(i + 1));
-      }
-      if (i + 1 < base.length) {
-        const letters = Array.from(base);
-        const left = letters[i];
-        const right = letters[i + 1];
-        if (left && right) {
-          letters[i] = right;
-          letters[i + 1] = left;
-          candidates.push(letters.join(""));
-        }
-      }
-    }
-    // Exclude every valid code for this city, including separate airport rows.
-    const valid = new Set(ROWS.filter((r) => r.city === row.city && r.country === row.country).flatMap((r) => r.codes.map((c) => c.c)));
-    for (const candidate of shuffle(candidates, rand)) {
-      if (seen.has(candidate) || valid.has(candidate)) continue;
-      seen.add(candidate);
-      out.push(candidate);
-      if (out.length === 3) break;
-    }
-  } else {
-    const key = promptKey(row, d);
-    const near = shuffle(ROWS.filter((r) => r.area === row.area), rand);
-    const far = shuffle(ROWS.filter((r) => r.area !== row.area), rand);
-    for (const r of [...near, ...far]) {
-      const text = answerText(r, d);
-      if (seen.has(text) || promptKey(r, d) === key || checkAnswer(row, d, text)) continue;
-      seen.add(text);
-      out.push(text);
-      if (out.length === 3) break;
-    }
+  const near = shuffle(
+    ROWS.filter((r) => difficulty === "easy" || (difficulty === "hard" ? r.si === row.si : r.area === row.area)),
+    rand,
+  );
+  const far = shuffle(
+    ROWS.filter((r) => difficulty !== "easy" && (difficulty === "hard" ? r.si !== row.si : r.area !== row.area)),
+    rand,
+  );
+  for (const r of [...near, ...far]) {
+    if (out.length >= n - 1) break;
+    const t = answerText(r, d);
+    if (seen.has(t) || promptKey(r, d) === key || checkAnswer(row, d, t)) continue;
+    if (d === "code-city" && r.city === row.city) continue;
+    seen.add(t);
+    out.push(t);
   }
   return shuffle([correct, ...out], rand);
-}
-
-/** Only complete code matches are emphasized, and never while a table code is hidden. */
-export function memoryLetterIndices(name: string, codes: string[], visible = true): number[] {
-  return visible ? [...new Set(codes.flatMap((code) => codeLetterIndices(name, code)))].sort((a, b) => a - b) : [];
 }

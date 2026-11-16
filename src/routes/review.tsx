@@ -30,6 +30,16 @@ export const Route = createFileRoute("/review")({
   component: ReviewPage,
 });
 
+const LINKS = [
+  { href: "#origins", label: "Why these codes?" },
+  { href: "#method", label: "The method" },
+  { href: "#types", label: "Code colors" },
+  { href: "#cheat", label: "Tricky codes" },
+  { href: "#plan", label: "7-day plan" },
+  { href: "#tricks", label: "Memory tricks" },
+  { href: "#sheet", label: "Full review sheet" },
+] as const;
+
 const STEPS = [
   {
     title: "Read one section out loud",
@@ -38,10 +48,10 @@ const STEPS = [
     cta: "Open Pronounce",
   },
   {
-    title: "Pick a code",
-    body: "Practice one section with Multiple Choice, then test recall with Typing.",
-    to: "/multiple-choice",
-    cta: "Quiz",
+    title: "Flip flashcards",
+    body: "Choose that section and “City → code”. Look at the city, say the code in your head, then flip. Mark “Knew it” only if you were right before flipping.",
+    to: "/flashcards",
+    cta: "Start flashcards",
   },
   {
     title: "Pick, then type",
@@ -51,7 +61,7 @@ const STEPS = [
   },
   {
     title: "Repeat only what you missed",
-    body: "In any quiz, set the rows option to “Missed”. A short round of your weak spots beats another long round of things you already know.",
+    body: "In any quiz, set the rows option to “Only rows I missed”. A short round of your weak spots beats another long round of things you already know.",
     to: "/type-it",
     cta: "Open Type the answer",
   },
@@ -109,18 +119,38 @@ function ReviewPage() {
 
   return (
     <main className="page">
-      <h1 className="text-3xl font-extrabold sm:text-4xl">Review</h1>
-      <details id="origins" className="review-section group mt-5 border-t border-border pt-3"><summary className="grid min-h-14 cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-3 font-display text-xl font-bold"><span>Code stories</span><ChevronDown className="size-5 shrink-0 transition group-open:rotate-180" /></summary>
+      <h1 className="text-3xl font-extrabold sm:text-4xl">Review guide: how to memorize everything</h1>
+      <p className="help mt-2 max-w-2xl">
+        There are {ROWS.length} cities to learn. This page shows a method that works, explains what the code colors
+        mean, and lists the tricky codes in one place. Start with “The method”, then use the plan to spread it over a
+        week.
+      </p>
+
+      <nav aria-label="On this page" className="mt-5 flex flex-wrap gap-2">
+        {LINKS.map((l) => (
+          <a
+            key={l.href}
+            href={l.href}
+            className="rounded-full border border-border bg-card px-3.5 py-1.5 text-sm font-medium hover:border-foreground/40 hover:bg-muted"
+          >
+            {l.label}
+          </a>
+        ))}
+      </nav>
+
+      <section id="origins" className="mt-10 scroll-mt-32">
+        <h2 className="section-title">Why these codes?</h2>
         <div className="mt-4 grid gap-5 sm:grid-cols-2">
-          {["Mumbai", "Beijing", "Ho Chi Minh", "Guangzhou", "Saint Petersburg", "Chicago", "Tokyo", "Paris", "Toronto"].map((city) => {
+          {["Singapore", "Mumbai", "Beijing", "Ho Chi Minh", "Guangzhou", "Saint Petersburg", "Chicago", "Tokyo", "Paris", "Toronto"].map((city) => {
             const row = exampleRow(city);
             return row ? <article key={city} className="panel grid content-start gap-3"><h3 className="text-lg font-bold">{row.city}</h3><CodeMemory row={row} /></article> : null;
           })}
         </div>
-      </details>
+      </section>
 
       {/* 1. Method */}
-      <details id="method" className="review-section group mt-5 border-t border-border pt-3"><summary className="grid min-h-14 cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-3 font-display text-xl font-bold"><span>Study method</span><ChevronDown className="size-5 shrink-0 transition group-open:rotate-180" /></summary>
+      <section id="method" className="mt-10 scroll-mt-20">
+        <h2 className="section-title">The method: 5 steps for each section</h2>
         <p className="help mt-1">Do these in order. Each step has a button that opens the right quiz.</p>
         <ol className="mt-4 grid gap-3">
           {STEPS.map((s, i) => (
@@ -143,10 +173,11 @@ function ReviewPage() {
             </li>
           ))}
         </ol>
-      </details>
+      </section>
 
       {/* 2. Code colors */}
-      <details id="types" className="review-section group mt-5 border-t border-border pt-3"><summary className="grid min-h-14 cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-3 font-display text-xl font-bold"><span>Code colors</span><ChevronDown className="size-5 shrink-0 transition group-open:rotate-180" /></summary>
+      <section id="types" className="mt-12 scroll-mt-20">
+        <h2 className="section-title">What the code colors mean</h2>
         <p className="help mt-1 max-w-2xl">
           Every code in the tables has a color. The color tells you where the code comes from, and that tells you how to
           remember it.
@@ -171,7 +202,7 @@ function ReviewPage() {
                     if (!r) return null;
                     return (
                       <div key={city} className="flex flex-wrap items-center gap-2">
-                        <span className="min-w-28 font-semibold"><MemoryName name={r.city} codes={r.codes.map((code) => code.c)} /></span>
+                        <span className="min-w-28 font-semibold"><MemoryName name={r.city} code={r.codes[0]?.c ?? ""} /></span>
                         <CodeChips codes={r.codes} />
                       </div>
                     );
@@ -181,10 +212,11 @@ function ReviewPage() {
             );
           })}
         </div>
-      </details>
+      </section>
 
       {/* 3. Cheat lists */}
-      <details id="cheat" className="review-section group mt-5 border-t border-border pt-3"><summary className="grid min-h-14 cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-3 font-display text-xl font-bold"><span>Tricky codes</span><ChevronDown className="size-5 shrink-0 transition group-open:rotate-180" /></summary>
+      <section id="cheat" className="mt-12 scroll-mt-20">
+        <h2 className="section-title">Tricky codes in one place</h2>
         <p className="help mt-1 max-w-2xl">
           Green codes mostly guess themselves, so these three lists hold the codes worth extra time. Learn one list at a
           time.
@@ -193,7 +225,7 @@ function ReviewPage() {
           {(["b", "p", "o"] as const).map((k) => {
             const entries = codesOfKind(k);
             return (
-              <details key={k} className="panel group">
+              <details key={k} className="panel group" open={k === "b"}>
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-bold">
                   <span>
                     {KIND_INFO[k].title} <span className="font-normal text-muted-foreground">({entries.length})</span>
@@ -215,10 +247,11 @@ function ReviewPage() {
             );
           })}
         </div>
-      </details>
+      </section>
 
       {/* 4. Plan */}
-      <details id="plan" className="review-section group mt-5 border-t border-border pt-3"><summary className="grid min-h-14 cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-3 font-display text-xl font-bold"><span>7-day plan</span><ChevronDown className="size-5 shrink-0 transition group-open:rotate-180" /></summary>
+      <section id="plan" className="mt-12 scroll-mt-20">
+        <h2 className="section-title">7-day plan</h2>
         <p className="help mt-1 max-w-2xl">
           About 15 minutes a day. On each day run the 5-step method on the sections listed. If you miss a day, pick up
           where you stopped.
@@ -236,10 +269,11 @@ function ReviewPage() {
             </li>
           ))}
         </ul>
-      </details>
+      </section>
 
       {/* 5. Tricks */}
-      <details id="tricks" className="review-section group mt-5 border-t border-border pt-3"><summary className="grid min-h-14 cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-3 font-display text-xl font-bold"><span>Study tips</span><ChevronDown className="size-5 shrink-0 transition group-open:rotate-180" /></summary>
+      <section id="tricks" className="mt-12 scroll-mt-20">
+        <h2 className="section-title">Memory tricks that help</h2>
         <div className="mt-4 grid gap-3 md:grid-cols-2">
           {TRICKS.map((t) => (
             <div key={t.title} className="panel">
@@ -259,10 +293,11 @@ function ReviewPage() {
             .
           </p>
         </div>
-      </details>
+      </section>
 
       {/* 6. Full sheet */}
-      <details id="sheet" className="review-section group mt-5 border-t border-border pt-3"><summary className="grid min-h-14 cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-3 font-display text-xl font-bold"><span>Review tables</span><ChevronDown className="size-5 shrink-0 transition group-open:rotate-180" /></summary>
+      <section id="sheet" className="mt-12 scroll-mt-20">
+        <h2 className="section-title">Full review sheet</h2>
         <p className="help mt-1 max-w-2xl">
           Every row from the handout, grouped by section. Nothing is hidden here, so use it to read and learn first,
           then quiz yourself.
@@ -274,8 +309,8 @@ function ReviewPage() {
             {(
               [
                 ["all", "All rows"],
-                ["unknown", "New"],
-                ["missed", "Missed"],
+                ["unknown", "Not yet known"],
+                ["missed", "Only rows I missed"],
               ] as const
             ).map(([v, label]) => (
               <Button
@@ -289,10 +324,10 @@ function ReviewPage() {
             ))}
             <span className="mx-1 hidden h-6 w-px bg-border sm:block" />
             <Button variant="pill" onClick={() => setAll(true)}>
-              Expand all
+              Open all sections
             </Button>
             <Button variant="pill" onClick={() => setAll(false)}>
-              Collapse all
+              Close all sections
             </Button>
           </div>
         </div>
@@ -337,11 +372,12 @@ function ReviewPage() {
                           <td className="border-b border-border px-4 py-2 font-semibold"><span className="mobile-table-label">Country</span>{r.country}</td>
                           <td className="border-b border-border px-4 py-2">
                             <span className="mobile-table-label">City</span>
-                            <MemoryName name={r.city} codes={r.codes.map((code) => code.c)} />
+                            <MemoryName name={r.city} code={r.codes[0]?.c ?? ""} />
                             {r.state && <span className="text-muted-foreground"> · {r.state}</span>}
                           </td>
                           <td className="border-b border-border px-4 py-2">
                             <span className="mobile-table-label">Code</span><CodeChips codes={r.codes} />
+                            <details className="mt-2"><summary className="cursor-pointer text-xs text-primary">Memory aid</summary><div className="mt-2"><CodeMemory row={r} /></div></details>
                           </td>
                           <td className="border-b border-border px-4 py-2">
                             <span className="mobile-table-label">Your mark</span>
@@ -366,7 +402,7 @@ function ReviewPage() {
             </details>
           ))}
         </div>
-      </details>
+      </section>
     </main>
   );
 }

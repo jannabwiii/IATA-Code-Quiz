@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 import type { Area, CodeKind, GeoCode } from "@/lib/geo";
 
 const KIND_CLASS: Record<CodeKind, string> = {
-  g: "text-code-g",
-  b: "text-code-b",
-  o: "text-code-o",
-  p: "text-code-p",
+  g: "bg-code-g",
+  b: "bg-code-b",
+  o: "bg-code-o",
+  p: "bg-code-p",
 };
 
 export function CodeChip({ code, className }: { code: GeoCode; className?: string | undefined }) {
@@ -85,12 +85,22 @@ export function SpeakButton({
 }
 
 export function Legend() {
-  return <div className="grid gap-2 text-sm sm:grid-cols-2" aria-label="Code origins">
-    <span className="text-code-g font-semibold">City name</span>
-    <span className="text-code-b font-semibold">Metro code</span>
-    <span className="text-code-o font-semibold">Airport name</span>
-    <span className="text-code-p font-semibold">Old name</span>
-  </div>;
+  return (
+    <div className="grid gap-1.5 text-sm sm:grid-cols-2" aria-label="What the code colors mean">
+      <span className="rounded-md bg-code-g px-2.5 py-1.5">
+        <b>Green</b>: spelled from the city name (Manila → MNL)
+      </span>
+      <span className="rounded-md bg-code-b px-2.5 py-1.5">
+        <b>Blue</b>: metro code for the whole city (London → LON)
+      </span>
+      <span className="rounded-md bg-code-o px-2.5 py-1.5">
+        <b>Orange</b>: named after the airport (Paris → CDG)
+      </span>
+      <span className="rounded-md bg-code-p px-2.5 py-1.5">
+        <b>Purple</b>: old or local name (Mumbai → BOM)
+      </span>
+    </div>
+  );
 }
 
 export function PillGroup<T extends string | number>({
@@ -151,7 +161,7 @@ export function FieldSelect({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="min-h-12 w-full min-w-0 cursor-pointer rounded-lg border border-border bg-card px-4 text-sm hover:border-foreground/40 focus-visible:outline-2 focus-visible:outline-ring"
+        className="h-10 w-full min-w-0 cursor-pointer rounded-lg border border-border bg-card px-4 text-sm hover:border-foreground/40 focus-visible:outline-2 focus-visible:outline-ring"
       >
         {children}
       </select>

@@ -11,9 +11,9 @@ export const Route = createFileRoute("/multiple-choice")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { title: "Multiple choice · World Geography Codes" },
-      { name: "description", content: "Pick the right airport code, city, country or TC area with similar-looking choices." },
+      { name: "description", content: "Pick the right airport code, city, country or TC area at your chosen difficulty." },
       { property: "og:title", content: "Multiple choice · World Geography Codes" },
-      { property: "og:description", content: "Pick the right airport code, city, country or TC area with similar-looking choices." },
+      { property: "og:description", content: "Pick the right airport code, city, country or TC area at your chosen difficulty." },
     ],
   }),
   component: MultipleChoicePage,
@@ -22,10 +22,10 @@ export const Route = createFileRoute("/multiple-choice")({
 function MultipleChoicePage() {
   return (
     <QuizShell
-      title="Multiple Choice"
-      description=""
+      title="Multiple choice"
+      description="Choose Easy, Medium or Hard. Wrong picks are saved so you can drill them later."
       icon={ListChecks}
-      renderQuestion={(p) => <ChoiceQuestion {...p} prompt={<PromptView row={p.row} direction={p.direction} />} />}
+      renderQuestion={(p) => <ChoiceQuestion {...p} prompt={<PromptView row={p.row} direction={p.direction} difficulty={p.difficulty} />} />}
     />
   );
 }

@@ -1,15 +1,15 @@
 import { cn } from "@/lib/utils";
-import { HINTS, type Direction, type GeoRow } from "@/lib/geo";
+import { HINTS, type Difficulty, type Direction, type GeoRow } from "@/lib/geo";
 import { speakCity, speakCodes, speakCountry } from "@/lib/speech";
 
-import { CodeMemory, MemoryName } from "./CodeMemory";
+import { CodeMemory } from "./CodeMemory";
 import { AreaBadge, CodeChips, SpeakButton } from "./bits";
 
 const QUESTION: Record<Direction, string> = {
-  "city-code": "Code",
-  "code-city": "City",
-  "city-country": "Country",
-  "city-area": "TC area",
+  "city-code": "What's the code for",
+  "code-city": "Which city has the code",
+  "city-country": "Which country is this city in?",
+  "city-area": "Which TC area is this?",
 };
 
 /** The question side. `tone="board"` renders it like an airport departure board. */
@@ -17,10 +17,12 @@ export function PromptView({
   row,
   direction,
   tone = "board",
+  difficulty = "medium",
 }: {
   row: GeoRow;
   direction: Direction;
   tone?: "board" | "paper";
+  difficulty?: Difficulty;
 }) {
   const board = tone === "board";
   const sub = board ? "text-board-muted" : "text-muted-foreground";
@@ -48,10 +50,15 @@ export function PromptView({
             board ? "text-board-foreground" : "text-foreground",
           )}
         >
-          <MemoryName name={row.city} codes={row.codes.map((code) => code.c)} />
+          {row.city}
         </span>
       )}
-
+      <span className={cn("text-sm", sub)}>
+        {difficulty !== "hard" && direction === "city-code" && [row.state, row.country].filter(Boolean).join(" · ")}
+        {difficulty !== "hard" && direction === "city-area" && row.country}
+        {direction === "city-country" && row.state}
+        {direction === "code-city" && row.codes.length > 1 && "Any code in the group"}
+      </span>
     </div>
   );
 }
@@ -61,9 +68,7 @@ export function AnswerDetails({ row, className }: { row: GeoRow; className?: str
   const hint = HINTS[row.city];
   const coHint = HINTS[row.country];
   return (
-    <details className={cn("border-t border-border py-3 text-left", className)}>
-      <summary className="min-h-11 cursor-pointer py-2 font-semibold">Details</summary>
-      <div className="grid gap-3 bg-card py-3">
+    <div className={cn("grid gap-3 border-t border-border bg-card py-4 text-left", className)}>
       <div className="flex flex-wrap items-center gap-2">
         <AreaBadge area={row.area} />
         <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{row.section}</span>
@@ -90,7 +95,6 @@ export function AnswerDetails({ row, className }: { row: GeoRow; className?: str
         <CodeChips codes={row.codes} className="text-base" />
       </div>
       <CodeMemory row={row} />
-      </div>
-    </details>
+    </div>
   );
 }

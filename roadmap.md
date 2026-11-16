@@ -1,6 +1,6 @@
-# Study app revision
-- [ ] Use inline font-color letter emphasis, conditional on visible codes in tables.
-- [ ] Keep Typing and Multiple Choice; remove difficulty settings and use similar code distractors.
-- [ ] Reduce visible text and remove obvious memory aids.
-- [ ] Collapse all tables by default and redesign phone answer areas.
-- [ ] Test the updated flows and deliver the full updated source archive.
+# Study experience updates
+- [x] Replace yellow with a friendly teal and rose design.
+- [x] Add Easy, Medium and Hard quiz settings and tests.
+- [x] Add code origins and matching-letter memory aids.
+- [x] Improve phone navigation, quiz layouts and table reading.
+- [x] Verify quizzes and phone layouts.
