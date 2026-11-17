@@ -82,7 +82,7 @@ function buildRows(): GeoRow[] {
 
 export const ROWS: GeoRow[] = buildRows();
 
-export { CODE_ORIGINS };
+export { CODE_ORIGINS, QUIZ_CODE_ORIGINS } from "./geo-raw";
 
 /** Highlight only when every code letter appears in order; never show a partial match. */
 export function codeLetterIndices(name: string, code: string): number[] {

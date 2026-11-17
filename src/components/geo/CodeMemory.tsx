@@ -1,4 +1,4 @@
-import { CODE_ORIGINS, codeLetterIndices, type GeoRow } from "@/lib/geo";
+import { CODE_ORIGINS, QUIZ_CODE_ORIGINS, codeLetterIndices, type GeoRow } from "@/lib/geo";
 import { CodeChip } from "./bits";
 
 export function MemoryName({ name, code }: { name: string; code: string }) {
@@ -8,12 +8,13 @@ export function MemoryName({ name, code }: { name: string; code: string }) {
     : <span key={i}>{letter}</span>)}</span>;
 }
 
-export function CodeMemory({ row }: { row: GeoRow }) {
-  const codes = row.codes.filter((code) => needsCodeMemory(row, code.c));
+export function CodeMemory({ row, quiz = false }: { row: GeoRow; quiz?: boolean }) {
+  const origins = quiz ? QUIZ_CODE_ORIGINS : CODE_ORIGINS;
+  const codes = row.codes.filter((code) => needsCodeMemory(row, code.c, quiz));
   if (!codes.length) return null;
   return <div className="grid gap-3">
     {codes.map((code) => {
-      const origin = CODE_ORIGINS[code.c];
+      const origin = origins[code.c];
       const name = origin?.name ?? row.city;
       const matches = codeLetterIndices(name, code.c).length > 0;
       return <div key={code.c} className="border-l-2 border-primary pl-3">
@@ -30,7 +31,8 @@ export function CodeMemory({ row }: { row: GeoRow }) {
   </div>;
 }
 
-export function needsCodeMemory(row: GeoRow, code?: string) {
+export function needsCodeMemory(row: GeoRow, code?: string, quiz = false) {
+  const origins = quiz ? QUIZ_CODE_ORIGINS : CODE_ORIGINS;
   return row.codes.some((c) => (!code || c.c === code) &&
-    (c.kind !== "g" || codeLetterIndices(row.city, c.c).length === 0) && !!CODE_ORIGINS[c.c]);
+    (c.kind !== "g" || codeLetterIndices(row.city, c.c).length === 0) && !!origins[c.c]);
 }

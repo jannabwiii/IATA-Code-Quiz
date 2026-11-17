@@ -94,7 +94,7 @@ export function AnswerDetails({ row, className }: { row: GeoRow; className?: str
         <SpeakButton label="Hear the code spelled" onClick={() => speakCodes(row)} />
         <CodeChips codes={row.codes} className="text-base" />
       </div>
-      <CodeMemory row={row} />
+      <CodeMemory row={row} quiz />
     </div>
   );
 }
