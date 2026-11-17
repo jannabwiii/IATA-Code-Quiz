@@ -108,4 +108,20 @@ describe("filters", () => {
     const out = filterRows({ section: "all", area: "all", rows: "missed" }, { [id]: "m" });
     expect(out.map((r) => r.id)).toEqual([id]);
   });
+
+  it("multiple selected sections return rows from each of them and no others", () => {
+    const out = filterRows({ sections: [0, 2], rows: "all" }, {});
+    expect(out.length).toBeGreaterThan(0);
+    expect(new Set(out.map((r) => r.si))).toEqual(new Set([0, 2]));
+  });
+
+  it("multiple selected TC areas return rows from each of them and no others", () => {
+    const out = filterRows({ areas: [1, 3], rows: "all" }, {});
+    expect(out.length).toBeGreaterThan(0);
+    expect(new Set(out.map((r) => r.area))).toEqual(new Set([1, 3]));
+  });
+
+  it("empty section and area selections behave like 'all'", () => {
+    expect(filterRows({ sections: [], areas: [], rows: "all" }, {}).length).toBe(ROWS.length);
+  });
 });
