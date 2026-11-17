@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { ROWS, buildOptions, checkAnswer, answerText, filterRows, codeLetterIndices, CODE_ORIGINS, DIFFICULTIES } from "@/lib/geo";
+import { ROWS, buildOptions, checkAnswer, answerText, filterRows, codeLetterIndices, CODE_ORIGINS, QUIZ_CODE_ORIGINS, DIFFICULTIES } from "@/lib/geo";
+import { needsCodeMemory } from "@/components/geo/CodeMemory";
 
 const row = (city: string, code?: string) => {
   const found = ROWS.find((r) => r.city === city && (!code || r.codeRaw.includes(code)));
@@ -9,6 +10,19 @@ const row = (city: string, code?: string) => {
 };
 
 describe("memory aids", () => {
+  it("connects Cincinnati CVG to the letters in Covington", () => {
+    expect(codeLetterIndices(QUIZ_CODE_ORIGINS.CVG?.name ?? "", "CVG")).toEqual([0, 2, 5]);
+    expect(needsCodeMemory(row("Cincinnati"), "CVG", true)).toBe(true);
+  });
+  it("provides quiz explanations for every marked special code in the handout", () => {
+    const missing = ROWS.flatMap((r) => r.codes.filter((c) => c.kind !== "g" && !QUIZ_CODE_ORIGINS[c.c]).map((c) => c.c));
+    expect(missing).toEqual([]);
+  });
+  it("keeps extra explanations in quizzes only and skips straightforward city codes", () => {
+    expect(needsCodeMemory(row("Cincinnati"), "CVG")).toBe(false);
+    expect(needsCodeMemory(row("Singapore"), "SIN", true)).toBe(false);
+    expect(needsCodeMemory(row("Mumbai"), "BOM", true)).toBe(true);
+  });
   it("highlights S-I-N in Singapore", () => {
     expect(codeLetterIndices("Singapore", "SIN")).toEqual([0, 1, 2]);
   });
