@@ -119,31 +119,19 @@ export function QuizShell({
               onChange={(direction) => update({ direction })}
               options={directions.map((d) => ({ value: d, label: label(d) }))}
             />
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FieldSelect
-                label="2 · Section"
-                value={String(settings.section)}
-                onChange={(v) => update({ section: v === "all" ? "all" : Number(v) })}
-              >
-                <option value="all">All sections</option>
-                {SECTION_NAMES.map((n, i) => (
-                  <option key={n} value={i}>
-                    {n}
-                  </option>
-                ))}
-              </FieldSelect>
-              <FieldSelect
-                label="TC area"
-                value={String(settings.area)}
-                onChange={(v) => update({ area: v === "all" ? "all" : (Number(v) as 1 | 2 | 3) })}
-              >
-                <option value="all">All TC areas</option>
-                {([1, 2, 3] as const).map((a) => (
-                  <option key={a} value={a}>
-                    {AREA_LABEL[a]}
-                  </option>
-                ))}
-              </FieldSelect>
+            <div className="grid gap-4">
+              <MultiPillGroup
+                label="2 · Sections (pick one or more)"
+                values={settings.sections}
+                onChange={(sections) => update({ sections })}
+                options={SECTION_NAMES.map((n, i) => ({ value: i, label: n }))}
+              />
+              <MultiPillGroup
+                label="TC areas (pick one or more)"
+                values={settings.areas}
+                onChange={(areas) => update({ areas })}
+                options={([1, 2, 3] as const).map((a) => ({ value: a, label: AREA_LABEL[a] }))}
+              />
             </div>
             <PillGroup
               label="Which cards"

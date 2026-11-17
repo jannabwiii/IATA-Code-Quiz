@@ -339,7 +339,7 @@
 }
 
 @layer components {
-  .memory-letter { background: transparent; color: var(--primary); font-weight: 800; }
+  .memory-letter { background: var(--primary); color: var(--primary-foreground); font-weight: 800; border-radius: .2em; padding-inline: .05em; }
   .site-header-inner { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 1rem; min-height: var(--header-h); }
   .mobile-table-label { display: none; }
 }
