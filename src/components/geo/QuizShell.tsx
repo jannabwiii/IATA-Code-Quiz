@@ -20,7 +20,7 @@ import {
 } from "@/lib/geo";
 import { setMark, useProgress } from "@/lib/progress";
 
-import { CodeChips, FieldSelect, PillGroup } from "./bits";
+import { CodeChips, MultiPillGroup, PillGroup } from "./bits";
 
 export interface QuestionProps {
   row: GeoRow;
